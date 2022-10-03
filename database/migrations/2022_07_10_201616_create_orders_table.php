@@ -15,19 +15,20 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string("order_id");
+            $table->string("order_id")->unique();
             $table->string('uid');
             $table->string('shid');
+            $table->string('payment_id');
             $table->string('pickup_dt');
             $table->string('delivery_dt');
             $table->string('geolocation');
             $table->string('address');
             $table->string('status');
-            $table->string('express');
+            $table->boolean('express');
             $table->string('service_type');
             $table->string('total_cost');
-            $table->string('quantity');
-            $table->string('clothes_types');
+           
+            $table->json('clothes_types');
             $table->timestamps();
         });
     }

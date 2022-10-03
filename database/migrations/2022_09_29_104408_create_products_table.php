@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('user_login_creds', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('uid')->unique();
-            $table->string('phone')->unique();
-            $table->timestamp('account_created_at')->nullable();
-            $table->rememberToken();
+            $table->string('name');
+            $table->string('category');
+            $table->string('image');
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_login_creds');
+        Schema::dropIfExists('products');
     }
 };

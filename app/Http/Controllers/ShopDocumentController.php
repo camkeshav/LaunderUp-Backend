@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Model\ShopDocument;
-use App\Model\ShopLoginCred;
+use App\Models\ShopDocument;
+use App\Models\ShopLoginCred;
 use Illuminate\Validation\ValidationException;
 use Response;
 
@@ -35,7 +35,7 @@ class ShopDocumentController extends Controller
             'ifsc_code'=>'required',
 
         ]);
-        $user=ShopLoginCred::where('shid', $request->shid)->get();
+        $user=ShopLoginCred::where('shid', $request->shid)->first();
         if(!$user){
             throw ValidationException::withMessages(['error' => 'Shid is incorrect']);
         }
@@ -44,7 +44,7 @@ class ShopDocumentController extends Controller
         if($request->pan_number==null&&$request->shop_license_number==null){
             return Response::json(['error'=>['Either Pan or License Number required'],422]);
         }
-        $user=ShopDocument::where('shid', $request->shid)->get();
+        $user=ShopDocument::where('shid', $request->shid)->first();
 
         $new_user=new ShopDocument;
         $new_user->shid=$request->shid;
@@ -55,9 +55,9 @@ class ShopDocumentController extends Controller
         $new_user->pan_number=$request->pan_number;
         $new_user->entity_name=$request->entity_name;
         $new_user->address_legal_entity=$request->address_legal_entity;
-        $new_user->pan_image_url= $request->file('pan_image')->store("images/documents/$shid");
+        $new_user->pan_image_url= $request->pan_image;
         $new_user->shop_license_number=$request->shop_license_number;
-        $new_user->shop_license_image_url=$request->file('shop_license_image')->store("images/documents/$shid");
+        $new_user->shop_license_image_url=$request->shop_license_image;
         $new_user->bank_name=$request->bank_name;
         $new_user->bank_account_number=$request->bank_account_number;
         $new_user->ifsc_code=$request->ifsc_code;
@@ -88,7 +88,7 @@ class ShopDocumentController extends Controller
      * @param  \App\Models\ShopDetails  $shopDetails
      * @return \Illuminate\Http\Response
      */
-    public function edit(ShopDetails $request)
+    public function edit(ShopDocument $request)
     {
         $new_user = ShopDocument::find($request->shid);
         $new_user->gst_registered=$request->gst_registered;
@@ -97,9 +97,9 @@ class ShopDocumentController extends Controller
         $new_user->pan_number=$request->pan_number;
         $new_user->entity_name=$request->entity_name;
         $new_user->address_legal_entity=$request->address_legal_entity;
-        $new_user->pan_image_url= $request->file('pan_image')->store("images/documents/$shid");
+        $new_user->pan_image_url= $request->pan_image;
         $new_user->shop_license_number=$request->shop_license_number;
-        $new_user->shop_license_image_url=$request->file('shop_license_image')->store("images/documents/$shid");
+        $new_user->shop_license_image_url=$request->shop_license_image;
         $new_user->bank_name=$request->bank_name;
         $new_user->bank_account_number=$request->bank_account_number;
         $new_user->ifsc_code=$request->ifsc_code;
@@ -111,4 +111,6 @@ class ShopDocumentController extends Controller
         }
 
     }
+
+   
 }

@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserDetail;
+use App\Models\UserLoginCred;
 use App\Http\Requests\StoreUserDetailRequest;
 use App\Http\Requests\UpdateUserDetailRequest;
+use Illuminate\Http\Request;
+use Response;
+use Carbon\Carbon;
 
 class UserDetailController extends Controller
 {
@@ -34,9 +38,59 @@ class UserDetailController extends Controller
      * @param  \App\Http\Requests\StoreUserDetailRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreUserDetailRequest $request)
+    public function store(Request $request)
     {
-        //
+        
+        // $table->id();
+        // $table->string('uid')->unique();
+        // $table->string('name');
+        // $table->string('phone');
+        // $table->string('email');
+        // $table->string('city');
+        // $table->string('pin');
+        // $table->timestamps();
+
+        $request->validate([
+            'uid' => 'required',
+            'name'=>'required',
+            'phone'=>'required',
+            'email'=>'required',
+            'city'=>'required',
+            'pin'=>'required',
+            
+        ]);
+
+        $user = UserLoginCred::where('uid', $request->uid)->first();
+        
+        if(!$user){
+            throw ValidationException::withMessages(['error' => 'Uid is incorrect']);
+        }
+
+        $user = UserDetail::where('uid', $request->uid)->first();
+            if($user){
+                return Response::json(['status'=>"Uid Already Exists"],500);
+            }
+       
+            $new_user = new UserDetail;
+            $new_user->uid=$request->uid;
+            $new_user->name=$request->name;
+            $new_user->email=$request->email;
+            $new_user->phone=$request->phone;
+            $new_user->city=$request->city;
+            $new_user->pin=$request->pin;
+
+            $check_user=$new_user->save();
+
+        
+            if($check_user!=null){
+                UserLoginCred::where('uid', $request->uid)->update(['account_created_at' => Carbon::now()]);                
+                return Response::json(['status'=>" User Details Saved"],200);
+            }else{
+                
+                return Response::json(['status'=>" User Details Not Saved"],500);
+            }
+
+        
     }
 
     /**
@@ -64,13 +118,43 @@ class UserDetailController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateUserDetailRequest  $request
-     * @param  \App\Models\UserDetail  $userDetail
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateUserDetailRequest $request, UserDetail $userDetail)
-    {
-        //
+    public function updateDetails(Request $request)
+    {   
+
+        $request->validate([
+            'uid' => 'required',
+            'name'=>'required',
+            'phone'=>'required',
+            'email'=>'required',
+            'city'=>'required',
+            'pin'=>'required',
+            
+
+        ]);
+        
+        $new_user = UserDetail::where('uid',$request->uid)->first();
+        if(!$new_user){
+            return Response::json(["error"=>'Account Not Found'],404);
+        }
+        $new_user = UserDetail::where('uid',$request->uid)->first();
+        $new_user->name=$request->name;
+        $new_user->phone=$request->phone;
+        $new_user->email=$request->email;
+        $new_user->city=$request->city;
+        $new_user->pin=$request->pin;
+       
+        // $new_user->cloth_types=$request->cloth_types;
+        // $new_user->image_url = $request->profile_image;
+        
+        $result = $new_user->save();
+        if($result){
+            return Response::json(["result"=>'Details Updated'],200);
+        }else{
+            return Response::json(["error"=>'Details Not Updated'],500);
+        }
     }
 
     /**

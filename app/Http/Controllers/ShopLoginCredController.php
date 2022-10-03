@@ -18,13 +18,13 @@ class ShopLoginCredController extends Controller
         ]);
 
 
-        $user = ShopLoginCred::where('phone', $request->phone)->get();
+        $user = ShopLoginCred::where('phone', $request->phone)->first();
 
         if($user==null){
             
             $new_user = new ShopLoginCred;
             $new_user->phone=$request->phone;
-            $new_user->shid="shid"+sha1(time());
+            $new_user->shid="shid".(string)sha1(time());
             $check_user=$new_user->save();
             if($check_user==null){
                 $account_type="Problem";
@@ -62,4 +62,6 @@ class ShopLoginCredController extends Controller
 
        
     }
+
+    
 }

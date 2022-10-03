@@ -46,7 +46,7 @@ class ShopOwnerController extends Controller
 
         ]);
 
-        $user = ShopLoginCred::where('shid', $request->shid)->get();
+        $user = ShopLoginCred::where('shid', $request->shid)->first();
         if(!$user){
             throw ValidationException::withMessages(['error' => 'Shid is incorrect']);
         }
@@ -64,7 +64,7 @@ class ShopOwnerController extends Controller
             $check_user=$new_user->save();
 
         }else{
-            $check_user=edit($new_user);
+            $check_user=ShopOwnerController::edit($new_user);
         }
         
         

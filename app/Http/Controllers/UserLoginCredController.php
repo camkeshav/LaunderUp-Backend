@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\UserLoginCred;
-use App\Http\Requests\StoreUserLoginCredRequest;
-use App\Http\Requests\UpdateUserLoginCredRequest;
+use Illuminate\Http\Request;
+use Response;
+
+
 
 class UserLoginCredController extends Controller
 {
@@ -13,9 +14,55 @@ class UserLoginCredController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $account_type;
+        $uid;
+        $request->validate([
+            'phone' => 'required',
+            
+        ]);
+
+
+        $user = UserLoginCred::where('phone', $request->phone)->first();
+
+        if($user==null){
+            
+            $new_user = new UserLoginCred;
+            $new_user->phone=$request->phone;
+            $new_user->uid="uid".(string)sha1(time());
+            $check_user=$new_user->save();
+            if($check_user==null){
+                $account_type="Problem";
+                return Response::json([
+                            'error' => ['Problem While Creating User'],
+                        ],500);
+            }else{
+                $user = UserLoginCred::where('phone', $request->phone)->first();
+                $account_type="Created";
+                $uid=$new_user->uid;
+            }
+        }else{
+            if($user->account_created_at!=null){
+                $account_type='Logged In';
+                
+            }else{
+                $account_type="Created but phone number exists";
+            }
+            $uid=$user->uid;
+            
+        }
+
+        $token = $user->createToken($request->phone)->plainTextToken;
+        $response = [
+            'account_status'=>$account_type,
+            'token'=>$token,
+            'uid'=>$uid,
+            "verified_at"=>$user->verfied_at
+
+        ];
+     
+        return Response::json( $response,200 );
     }
 
     /**
@@ -25,7 +72,7 @@ class UserLoginCredController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**

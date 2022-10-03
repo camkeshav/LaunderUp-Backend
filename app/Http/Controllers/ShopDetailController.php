@@ -8,7 +8,7 @@ use App\Models\ShopLoginCred;
 use Illuminate\Validation\ValidationException;
 use Response;
 
-class ShopDetailsController extends Controller
+class ShopDetailController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -62,11 +62,11 @@ class ShopDetailsController extends Controller
 
         ]);
 
-        $user = ShopLoginCred::where('shid', $request->shid)->get();
+        $user = ShopLoginCred::where('shid', $request->shid)->first();
         if(!$user){
             throw ValidationException::withMessages(['error' => 'Shid is incorrect']);
         }
-        $user=ShopDetail::where('shid', $request->shid)->get();
+        $user=ShopDetail::where('shid', $request->shid)->first();
         
     
 
@@ -74,30 +74,27 @@ class ShopDetailsController extends Controller
             $new_user->shid=$request->shid;
             $new_user->shop_name=$request->shop_name;
             $new_user->shop_address=$request->shop_address;
-            $new_user->shio_phone_number=$request->shop_phone_no;
-            $new_user->operational_hours=$request->operation_hours;
+            $new_user->shop_phone_no=$request->shop_phone_no;
+            $new_user->operational_hours=$request->operational_hours;
             $new_user->days_open=$request->days_open;
-            $new_user->services_available=$request->service_available;
-            $new_user->cloth_types=$request->cloth_types;
-            $new_user->images_url = $request->file('profile_image')->store("images/$shid");
+            $new_user->services_available=$request->services_available;
+            $new_user->cloth_types=json_encode($request->cloth_types);
+            $new_user->image_url = $request->profile_image;
                 
 
-
-            
             $check_user;
 
             if($user){
-                $check_user=edit($new_user);
+                $check_user=ShopDetailController::edit($new_user);
             }else{
                 $check_user=$new_user->save();
 
             }
-            if($check_user){
+            if($check_user!=null){
                 
                 return Response::json(['status'=>"Details Saved"],200);
             }else{
-                //$response->status='Details Not Saved';
-                //return Response::json($response,500);
+                
                 return null;
             }
 
@@ -108,10 +105,10 @@ class ShopDetailsController extends Controller
     /**
      * Display the specified resource.
      
-     * @param  \App\Models\ShopDetails  $shopDetails
+     * @param  \App\Models\ShopDetail  $shopDetails
      * @return \Illuminate\Http\Response
      */
-    public function show(ShopDetails $shopDetails)
+    public function show(ShopDetail $shopDetails)
     {
         //
     }
@@ -119,20 +116,20 @@ class ShopDetailsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ShopDetails  $shopDetails
+     * @param  \App\Models\ShopDetail  $shopDetails
      * @return \Illuminate\Http\Response
      */
-    public function edit(ShopDetails $request)
+    public function edit(ShopDetail $request)
     {
         $new_user = ShopDetail::find($request->shid);
         $new_user->shop_name=$request->shop_name;
         $new_user->shop_address=$request->shop_address;
         $new_user->shio_phone_number=$request->shop_phone_no;
-        $new_user->operational_hours=$request->operation_hours;
+        $new_user->operational_hours=$request->operational_hours;
         $new_user->days_open=$request->days_open;
-        $new_user->services_available=$request->service_available;
-        $new_user->cloth_types=$request->cloth_types;
-        $new_user->images_url = $request->file('image')->store("images/$shid");
+        $new_user->services_available=$request->services_available;
+        $new_user->cloth_types=json_encode($request->cloth_types);
+        $new_user->image_url =$request->profile_image;
         $result = $new_user->save();
         if(result){
             return ["result"=>'updated'];
@@ -146,10 +143,9 @@ class ShopDetailsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ShopDetails  $shopDetails
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ShopDetails $shopDetails)
+    public function updateDetails(Request $request)
     {   
 
         $request->validate([
@@ -160,39 +156,65 @@ class ShopDetailsController extends Controller
             'operational_hours'=>'required',
             'days_open'=>'required',
             'services_available'=>'required',
-            'cloth_types'=>'required',
+            
 
         ]);
         
-        $new_user = ShopDetail::find($request->shid);
+        $new_user = ShopDetail::where('shid',$request->shid)->first();
         if(!$new_user){
             return Response::json(["error"=>'Account Not Found'],404);
         }
-        $$new_user = ShopDetail::find($request->shid);
+        $new_user = ShopDetail::where('shid',$request->shid)->first();
         $new_user->shop_name=$request->shop_name;
         $new_user->shop_address=$request->shop_address;
-        $new_user->shio_phone_number=$request->shop_phone_no;
-        $new_user->operational_hours=$request->operation_hours;
+        $new_user->shop_phone_no=$request->shop_phone_no;
+        $new_user->operational_hours=$request->operational_hours;
         $new_user->days_open=$request->days_open;
-        $new_user->services_available=$request->service_available;
-        $new_user->cloth_types=$request->cloth_types;
-        $new_user->images_url = $request->file('image')->store("images/$shid");
+        $new_user->services_available=$request->services_available;
+       
+        // $new_user->cloth_types=$request->cloth_types;
+        // $new_user->image_url = $request->profile_image;
+        
         $result = $new_user->save();
-        if(result){
+        if($result){
             return Response::json(["result"=>'Details Updated'],200);
         }else{
-            return Response::json(["error"=>'Deatails Not Saved'],500);
+            return Response::json(["error"=>'Details Not Updated'],500);
         }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ShopDetails  $shopDetails
+     * @param  \App\Models\ShopDetail  $shopDetails
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ShopDetails $shopDetails)
+    public function destroy(ShopDetail $shopDetails)
     {
         //
+    }
+
+    public function inventory(Request $request){
+
+        $request->validate([
+            'shid'=>'required',
+            'cloth_types'=>'required',
+
+        ]);
+
+        $new_user = ShopDetail::where('shid',$request->shid)->first();
+        if(!$new_user){
+            return Response::json(["error"=>'Account Not Found'],404);
+        }
+        $new_user = ShopDetail::where('shid',$request->shid)->first();
+        $new_user->cloth_types=$request->cloth_types;
+
+        $result = $new_user->save();
+        if($result){
+            return Response::json(["result"=>'Details Updated'],200);
+        }else{
+            return Response::json(["error"=>'Details Not Updated'],500);
+        }
+
     }
 }

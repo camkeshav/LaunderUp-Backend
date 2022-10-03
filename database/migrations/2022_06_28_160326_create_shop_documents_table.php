@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('address_legal_entity');
             $table->string('pan_image_url');
             $table->string('shop_license_number');
-            $table->string('shop_licence_image_url');
+            $table->string('shop_license_image_url');
             $table->string('bank_name');
             $table->string('bank_account_number');
             $table->string('ifsc_code');
