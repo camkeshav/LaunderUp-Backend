@@ -230,7 +230,11 @@ class OrderController extends Controller
 
     public function userFetch($uid){
         
-        return Order::where('uid',$uid);
+        return Order::where('uid',$uid)->get();
+    }
+
+    public function shopFetch($shid){
+        return Order::where('shid',$shid)->get();
     }
 
 
