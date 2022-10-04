@@ -45,12 +45,12 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('remotemysql.com'),
-            'host' => env('DB_HOST', 'https://remotemysql.com'),
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', 'sql200.epizy.com'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'rM0qvU8jPI'),
-            'username' => env('DB_USERNAME', 'rM0qvU8jPI'),
-            'password' => env('DB_PASSWORD', 'NRY3I9ObnA'),
+            'database' => env('DB_DATABASE', 'epiz_32722940_launderup'),
+            'username' => env('DB_USERNAME', 'epiz_32722940'),
+            'password' => env('DB_PASSWORD', 'Y0D8OTYbiKu12V'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
