@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('status');
             $table->string('razorpay_payment_id')->nullable();
             $table->string('razorpay_order_id')->nullable();
-            $table->string('razorpay_order_id')->nullable();
+            $table->string('razorpay_signature')->nullable();
             $table->timestamps();
         });
     }
