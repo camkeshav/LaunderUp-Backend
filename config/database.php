@@ -45,7 +45,7 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('DATABASE_URL'),
+            'url' => env('sql200.epizy.com'),
             'host' => env('DB_HOST', 'sql200.epizy.com'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'epiz_32722940_launderup'),
