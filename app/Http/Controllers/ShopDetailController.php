@@ -57,6 +57,7 @@ class ShopDetailController extends Controller
             'shop_phone_no'=>'required',
             'operational_hours'=>'required',
             'days_open'=>'required',
+            'express'=>'required|boolean',
             'services_available'=>'required',
             'cloth_types'=>'required',
 
@@ -77,6 +78,7 @@ class ShopDetailController extends Controller
             $new_user->shop_phone_no=$request->shop_phone_no;
             $new_user->operational_hours=$request->operational_hours;
             $new_user->days_open=$request->days_open;
+            $new_user->express=$request->express;
             $new_user->services_available=$request->services_available;
             $new_user->cloth_types=json_encode($request->cloth_types);
             $new_user->image_url = $request->profile_image;
@@ -127,6 +129,7 @@ class ShopDetailController extends Controller
         $new_user->shio_phone_number=$request->shop_phone_no;
         $new_user->operational_hours=$request->operational_hours;
         $new_user->days_open=$request->days_open;
+        $new_user->express=$request->express;
         $new_user->services_available=$request->services_available;
         $new_user->cloth_types=json_encode($request->cloth_types);
         $new_user->image_url =$request->profile_image;
@@ -170,6 +173,7 @@ class ShopDetailController extends Controller
         $new_user->shop_phone_no=$request->shop_phone_no;
         $new_user->operational_hours=$request->operational_hours;
         $new_user->days_open=$request->days_open;
+        $new_user->express=$request->express;
         $new_user->services_available=$request->services_available;
        
         // $new_user->cloth_types=$request->cloth_types;
@@ -215,6 +219,25 @@ class ShopDetailController extends Controller
         }else{
             return Response::json(["error"=>'Details Not Updated'],500);
         }
+
+    }
+
+    public function fetch($shid){
+        return ShopDetail::where('shid',$shid)->first();
+    }
+
+    public function userFetch($express,$service,$search=null){
+
+        return $search?ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
+                        ->where('services_available',"like","%".$service."%")
+                        ->where('shop_name',"like","%".$search."%")
+                        ->paginate(20):
+                        ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
+                        ->where('services_available',"like","%".$service."%")->paginate(20);
+
+        
+        
+
 
     }
 }

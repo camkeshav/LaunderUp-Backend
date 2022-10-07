@@ -28,6 +28,11 @@ Route::post("neworder",[OrderController::class,'store']);
 Route::post("updateShopDetails",[ShopDetailController::class,'updateDetails']);
 Route::post("updateUserDetails",[UserDetailController::class,'updateDetails']);
 Route::post("inventory",[ShopDetailController::class,'inventory']);
-Route::get("userOrderFetch/{uid}",[OrderController::class,'userFetch']);
+Route::get("userOrderFetch/{uid}/{page}",[OrderController::class,'userFetch']);
 Route::get("placeOrder",[OrderController::class,'place']);
+Route::get("shopOrderFetch/{shid}/{type}/{page}",[OrderController::class,'shopFetch']);
+Route::get("orderFetch/{order_id}",[OrderController::class,'fetch']);
+Route::get("shopFetch/{shid}",[ShopDetailController::class,'fetch']);
+Route::get("shopUserFetch/{express}/{service}/{search?}",[ShopDetailController::class,'userFetch']);
+Route::post("test",[ShopRegister::class,'test']);
  

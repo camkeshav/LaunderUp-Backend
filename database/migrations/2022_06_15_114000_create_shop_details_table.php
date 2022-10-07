@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('shop_address');
             $table->string('shop_phone_no');
             $table->string('operational_hours');
+            $table->boolean('express');
             $table->string('days_open');
             $table->string('image_url');
             $table->string('services_available');

@@ -228,13 +228,19 @@ class OrderController extends Controller
     }
 
 
-    public function userFetch($uid){
+    public function userFetch($uid,$page){
         
-        return Order::where('uid',$uid)->get();
+        return Order::where('uid',$uid)->paginate($page);
+
     }
 
-    public function shopFetch($shid){
-        return Order::where('shid',$shid)->get();
+    public function shopFetch($shid,$type,$page){
+        return Order::where('shid',$shid)->where('status',$type)->paginate($page);
+    }
+
+
+    public function fetch($order_id){
+        return Order::where('order_id',$order_id)->first();
     }
 
 
