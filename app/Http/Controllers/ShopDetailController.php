@@ -60,6 +60,7 @@ class ShopDetailController extends Controller
             'express'=>'required|boolean',
             'services_available'=>'required',
             'cloth_types'=>'required',
+            'profile_image'=>'required',
 
         ]);
 
@@ -123,18 +124,18 @@ class ShopDetailController extends Controller
      */
     public function edit(ShopDetail $request)
     {
-        $new_user = ShopDetail::find($request->shid);
+        $new_user = ShopDetail::where('shid', $request->shid)->first();
         $new_user->shop_name=$request->shop_name;
         $new_user->shop_address=$request->shop_address;
-        $new_user->shio_phone_number=$request->shop_phone_no;
+        $new_user->shop_phone_no=$request->shop_phone_no;
         $new_user->operational_hours=$request->operational_hours;
         $new_user->days_open=$request->days_open;
         $new_user->express=$request->express;
         $new_user->services_available=$request->services_available;
         $new_user->cloth_types=json_encode($request->cloth_types);
-        $new_user->image_url =$request->profile_image;
+        $new_user->image_url =$request->image_url;
         $result = $new_user->save();
-        if(result){
+        if($result){
             return ["result"=>'updated'];
         }else{
             return null;

@@ -33,6 +33,8 @@ class ShopDocumentController extends Controller
             'bank_name'=>'required',
             'bank_account_number'=>'required',
             'ifsc_code'=>'required',
+            'pan_image'=>'required',
+            'shop_license_image'=>'required',
 
         ]);
         $user=ShopLoginCred::where('shid', $request->shid)->first();
@@ -66,7 +68,7 @@ class ShopDocumentController extends Controller
         $check_user;
 
         if($user){
-            $check_user=edit($new_user);
+            $check_user=ShopDocumentController::edit($new_user);
         }else{
             $check_user=$new_user->save();
 
@@ -90,21 +92,21 @@ class ShopDocumentController extends Controller
      */
     public function edit(ShopDocument $request)
     {
-        $new_user = ShopDocument::find($request->shid);
+        $new_user = ShopDocument::where('shid', $request->shid)->first();;
         $new_user->gst_registered=$request->gst_registered;
         $new_user->five_percent_gst=$request->five_percent_gst;
         $new_user->gst_number=$request->gst_number;
         $new_user->pan_number=$request->pan_number;
         $new_user->entity_name=$request->entity_name;
         $new_user->address_legal_entity=$request->address_legal_entity;
-        $new_user->pan_image_url= $request->pan_image;
+        $new_user->pan_image_url= $request->pan_image_url;
         $new_user->shop_license_number=$request->shop_license_number;
-        $new_user->shop_license_image_url=$request->shop_license_image;
+        $new_user->shop_license_image_url=$request->shop_license_image_url;
         $new_user->bank_name=$request->bank_name;
         $new_user->bank_account_number=$request->bank_account_number;
         $new_user->ifsc_code=$request->ifsc_code;
         $result = $new_user->save();
-        if(result){
+        if($result){
             return ["result"=>'updated'];
         }else{
             return null;

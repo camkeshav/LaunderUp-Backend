@@ -11,6 +11,7 @@ use App\Http\Controllers\ShopDocumentsController;
 use DB;
 use Carbon\Carbon;
 use Response;
+use Illuminate\Support\Facades\Storage;
 
 DB::beginTransaction();
 
@@ -31,12 +32,16 @@ class ShopRegister extends Controller
             // 'shop_license_image'=>'required'
             
         ]);
+
+        $shid = $request->shid;
         
 
         $user = ShopLoginCred::where('shid', $request->shid)->first();
         if(!$user){
             return Response::json(["status"=>'Deatails Not Saved',"error"=>"Shid is incorrect"]);
         }
+
+        DB::beginTransaction();
         
         //putting shid in json objects
         $shop_owner_details = $request->shop_owner_details;
@@ -48,19 +53,35 @@ class ShopRegister extends Controller
         $shop_details = $request->shop_details;
         $shop_details["shid"] = $request->shid;
         //$shop_details["profile_image"]=base64_decode($request->filename)->store("images/documents/$shid");
-        $shop_details["profile_image"]="image";
+        $store = Storage::put("profile".$shid.".jpg", base64_decode($request->profile_image));
+
+        if($store==1){
+            $shop_details["profile_image"] = Storage::path("profile".$shid);
+        }
+
+        // $shop_details["profile_image"]="image";
         
 
         $shop_documents = $request->shop_documents;
         $shop_documents["shid"] = $request->shid;
         //$shop_owner_details["shop_license_image"]=$request->file('shop_license_image')->store("images/documents/$shid");
-        $shop_documents["pan_image"]="image";
-        $shop_documents["shop_license_image"]="image";
+        // $shop_documents["pan_image"]="image";
+        // $shop_documents["shop_license_image"]="image";
+
+        $store = Storage::put("pan".$shid.".jpg", base64_decode($request->pan_image));
+
+        if($store==1){
+            $shop_documents["pan_image"] = Storage::path("pan".$shid);
+        }
+
+        $store = Storage::put("license".$shid.".jpg", base64_decode($request->shop_license_image));
+
+        if($store==1){
+            $shop_documents["shop_license_image"] = Storage::path("license".$shid);
+        }
+
 
         
-
-
-        DB::beginTransaction();
 
         $check;
 
@@ -91,6 +112,10 @@ class ShopRegister extends Controller
     }
 
     public function test(Request $request){
-        return $request->file('file')->store('images');
+        $store = Storage::put('file.jpg', base64_decode($request->profile_image));
+
+        if($store==1){
+            return $path = Storage::path('file.jpg');
+        }
     }
 }

@@ -61,7 +61,9 @@ class UserLoginCredController extends Controller
             "verified_at"=>$user->verfied_at
 
         ];
-     
+
+        UserLoginCredController::sendNoti("f7YcqgXZTqyNnxcHf7aU7u:APA91bHPqH8zGmA8smHP3S40lzYSF-Vk0dnJfDvboQsW-tk8almyckIpN_URKr9KYINwuz1wy7ChBpS9Q_5LdDnuxgGtlljWs_9gm0wl1eplCJpV6dFLAP9-DGymZqNE7Cl24k2nN3D-");
+
         return Response::json( $response,200 );
     }
 
@@ -129,5 +131,32 @@ class UserLoginCredController extends Controller
     public function destroy(UserLoginCred $userLoginCred)
     {
         //
+    }
+    public function sendNoti($deviceid){
+        // Generated @ codebeautify.org
+        $id = 'f7YcqgXZTqyNnxcHf7aU7u:APA91bHPqH8zGmA8smHP3S40lzYSF-Vk0dnJfDvboQsW-tk8almyckIpN_URKr9KYINwuz1wy7ChBpS9Q_5LdDnuxgGtlljWs_9gm0wl1eplCJpV6dFLAP9-DGymZqNE7Cl24k2nN3D-';
+        $url='https://fcm.googleapis.com/v1/projects/launderup-fce42/messages:send';
+        $api_key='BOLjimDaTy82tf6__scFA02P9hBlRXhfMqd8wsNPhzvUQdyZ4PFdfniIJLkyXqCAQMKs-sseEXVGjcDv_Ou7Ysk';
+        $fields="{\n\"message\":{\n   \"notification\":{\n     \"title\":\"FCM Message\",\n     \"body\":\"This is an FCM Message\"\n   },\n 
+          \"token\":\ $deviceid \n}}";
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,$fields);
+
+        $headers = array();
+        $headers[] = 'Authorization: Bearer ya29.'.$api_key;
+        $headers[] = 'Content-Type: application/json';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+
     }
 }

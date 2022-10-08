@@ -101,12 +101,12 @@ class ShopOwnerController extends Controller
      */
     public function edit(ShopOwner $shopOwner)
     {
-        $new_user = ShopOwner::find($shopOwner->shid);
+        $new_user = ShopOwner::where('shid', $shopOwner->shid)->first();
         $new_user->owner_name=$shopOwner->owner_name;
         $new_user->owner_address=$shopOwner->owner_address;
         $new_user->owner_phone=$shopOwner->owner_phone;
         $result = $new_user->save();
-        if(result){
+        if($result){
             return ["result"=>'updated'];
         }else{
             return null;

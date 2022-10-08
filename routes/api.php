@@ -35,4 +35,5 @@ Route::get("orderFetch/{order_id}",[OrderController::class,'fetch']);
 Route::get("shopFetch/{shid}",[ShopDetailController::class,'fetch']);
 Route::get("shopUserFetch/{express}/{service}/{search?}",[ShopDetailController::class,'userFetch']);
 Route::post("test",[ShopRegister::class,'test']);
+Route::get("userFetch/{uid?}",[UserDetailController::class,'fetch']);
  

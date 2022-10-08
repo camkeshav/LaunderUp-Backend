@@ -167,4 +167,15 @@ class UserDetailController extends Controller
     {
         //
     }
+    public function fetch($uid=null){
+        if($uid!=null){
+            $data = UserDetail::where('uid',$uid)->first();
+            if($data==null){
+                return Response::json(["error"=>'Uid Not Found'],500);
+            }else{
+                return $data;
+            }
+        }
+        return $uid?:UserDetail::paginate(20);
+    }
 }
