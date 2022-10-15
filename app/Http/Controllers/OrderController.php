@@ -193,27 +193,91 @@ class OrderController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Order $order)
+   
+    public function cancel(Request $request)
     {
-        //
+        $request->validate([
+            'uid'=>'required',
+            'cloth_order_id'=>'required',
+            
+        ]);
+
+        
+
+        $user = UserLoginCred::where('uid', $request->uid)->first();
+        if(!$user){
+            return Response::json(['error'=>['UId is not valid'],422]);
+        }
+
+        $user = Order::where('order_id', $request->cloth_order_id)->first();
+
+        if(!$user){
+            return Response::json(['error'=>['cloth_order_id is not valid'],422]);
+        }
+
+        $user->status="Cancelled";
+
+        $result = $user->save();
+        if($result){
+            return Response::json(["result"=>'Order Cancelled'],200);
+        }else{
+            return Response::json(["error"=>'Something Wrong!! Try Again'],500);
+        }
+
+        
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateOrderRequest  $request
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateOrderRequest $request, Order $order)
+   
+     
+    public function update(Request $request)
     {
-        //
+
+        $request->validate([
+            'shid'=>'required',
+            'cloth_order_id'=>'required',
+            
+            
+        ]);
+
+        $user = UserLoginCred::where('uid', $request->uid)->first();
+        if(!$user){
+            return Response::json(['error'=>['UId is not valid'],422]);
+        }
+
+        $user = Order::where('order_id', $request->cloth_order_id)->first();
+
+        if(!$user){
+            return Response::json(['error'=>['cloth_order_id is not valid'],422]);
+        }
+
+        $status = $user->status;
+
+        if($status=='Placed'||$status=='placed'){
+
+
+            $user->status=$request->option;
+
+        }else if($status=='Accepted'||$status=='accepted'||$status=='Rejected'||$status=='rejected'){
+            
+            $user->status="Picked";
+
+        }
+        else if($status=='Picked'||$status=='picked'){
+
+            $user->status="Completed";
+
+        }else{
+            return Response::json(["error"=>'Order Completed, We Cannot Update it or Order Does not Exist'],500);
+
+        }
+
+        $result = $user->save();
+        if($result){
+            return Response::json(["result"=>'Order Updated'],200);
+        }else{
+            return Response::json(["error"=>'Something Wrong!! Try Again'],500);
+        }
+        
     }
 
     /**

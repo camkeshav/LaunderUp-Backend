@@ -177,8 +177,7 @@ class ShopDetailController extends Controller
         $new_user->express=$request->express;
         $new_user->services_available=$request->services_available;
        
-        // $new_user->cloth_types=$request->cloth_types;
-        // $new_user->image_url = $request->profile_image;
+     
         
         $result = $new_user->save();
         if($result){
