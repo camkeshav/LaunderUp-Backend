@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use Response;
 use Illuminate\Support\Facades\Storage;
 
-DB::beginTransaction();
+
 
 class ShopRegister extends Controller
 {
@@ -56,7 +56,7 @@ class ShopRegister extends Controller
         $store = Storage::put("profile".$shid.".jpg", base64_decode($request->profile_image));
 
         if($store==1){
-            $shop_details["profile_image"] = Storage::path("profile".$shid);
+            $shop_details["profile_image"] = Storage::path("profile".$shid.".jpg");
         }
 
         // $shop_details["profile_image"]="image";
@@ -102,7 +102,7 @@ class ShopRegister extends Controller
             
         }
         
-        DB::commit();
+        
         DB::commit();
         ShopLoginCred::where('shid', $request->shid)->update(['account_created_at' =>Carbon::now()]);
         return Response::json(["status"=>'Details Saved'],200);
