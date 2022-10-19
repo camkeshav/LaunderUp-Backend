@@ -227,14 +227,24 @@ class ShopDetailController extends Controller
     }
 
     public function userFetch($express,$service,$search=null){
+        if($express==true){
+            return $search?ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
+            ->where('services_available',"like","%".$service."%")
+            ->where('shop_name',"like","%".$search."%")
+            ->paginate(20):
+            ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
+            ->where('services_available',"like","%".$service."%")->paginate(20);
 
-        return $search?ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
-                        ->where('services_available',"like","%".$service."%")
-                        ->where('shop_name',"like","%".$search."%")
-                        ->paginate(20):
-                        ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
-                        ->where('services_available',"like","%".$service."%")->paginate(20);
+        }else{
+            return $search?ShopDetail::where('services_available',"like","%".$service."%")
+            ->where('shop_name',"like","%".$search."%")
+            ->paginate(20):
+            ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
+            ->where('services_available',"like","%".$service."%")->paginate(20);
 
+            
+        }
+       
         
         
 
