@@ -109,7 +109,7 @@ class OrderController extends Controller
             'service_type'=>'required',
             'total_cost'=>'required',
             'clothes_types'=>'required',
-            'express'=>'required|boolean',
+            'express'=>'required',
         ]);
 
             $user = ShopLoginCred::where('shid', $request->shid)->first();
@@ -139,7 +139,7 @@ class OrderController extends Controller
             $new_user->total_cost=$request->total_cost;
             $new_user->clothes_types=json_encode($request->clothes_types);
             $new_user->service_type=$request->service_type;
-            $new_user->express=$request->express;
+            $new_user->express=filter_var($request->express, FILTER_VALIDATE_BOOLEAN);
                 
             DB::beginTransaction();
             $result = new JsonResponse();
