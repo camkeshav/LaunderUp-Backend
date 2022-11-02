@@ -42,6 +42,7 @@ class ShopRegister extends Controller
         }
 
         DB::beginTransaction();
+        try {
         
         //putting shid in json objects
         $shop_owner_details = json_decode($request->shop_owner_details,true);
@@ -56,7 +57,7 @@ class ShopRegister extends Controller
         
         //$shop_details["profile_image"]=base64_decode($request->filename)->store("images/documents/$shid");
         $store = Storage::put("profile".$shid.".jpg", base64_decode($request->profile_image));
-
+       
         if($store==1){
             $shop_details['profile_image'] = Storage::path("profile".$shid.".jpg");
         }
@@ -71,13 +72,13 @@ class ShopRegister extends Controller
         // $shop_documents["shop_license_image"]="image";
 
         $store = Storage::put("pan".$shid.".jpg", base64_decode($request->pan_image));
-
+            
         if($store==1){
             $shop_documents['pan_image'] = Storage::path("pan".$shid);
-        }
-
+            }
+            
         $store = Storage::put("license".$shid.".jpg", base64_decode($request->shop_license_image));
-
+        
         if($store==1){
             $shop_documents['shop_license_image'] = Storage::path("license".$shid);
         }
@@ -87,7 +88,7 @@ class ShopRegister extends Controller
 
         $check;
 
-        try {
+        
             $result=(new ShopOwnerController)->store(new Request($shop_owner_details));
             if(!$result) throw "Details Not Saved";
 

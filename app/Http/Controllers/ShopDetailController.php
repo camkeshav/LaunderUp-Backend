@@ -174,11 +174,9 @@ class ShopDetailController extends Controller
         $new_user->shop_phone_no=$request->shop_phone_no;
         $new_user->operational_hours=$request->operational_hours;
         $new_user->days_open=$request->days_open;
-        $new_user->express=$request->express;
         $new_user->services_available=$request->services_available;
        
      
-        
         $result = $new_user->save();
         if($result){
             return Response::json(["result"=>'Details Updated'],200);

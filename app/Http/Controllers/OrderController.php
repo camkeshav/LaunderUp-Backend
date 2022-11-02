@@ -13,6 +13,7 @@ use App\Http\Controllers\PaymentController;
 use DB;
 use Response;
 use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -264,7 +265,7 @@ class OrderController extends Controller
         }
         else if($status=='Picked'||$status=='picked'){
 
-            $user->status="Completed";
+            $user->status="completed";
 
         }else{
             return Response::json(["error"=>'Order Completed, We Cannot Update it or Order Does not Exist'],500);
@@ -298,14 +299,59 @@ class OrderController extends Controller
 
     }
 
-    public function shopFetch($shid,$type,$page){
-        return Order::where('shid',$shid)->where('status',$type)->paginate($page);
+    public function shopFetch($shid,$type){
+        if($type=="all"){
+            return Order::where('shid',$shid)->paginate(20);
+        }
+        return Order::where('shid',$shid)->where('status',"like","%".$type."%")->paginate(20);
     }
 
 
     public function fetch($order_id){
         return Order::where('order_id',$order_id)->first();
     }
+
+    public function stats($shid,$type){
+
+        $data;
+
+        if($type=="year"){
+
+           $data= Order::where("shid",$shid)->where("status","completed")->where("updated_at",'>',Carbon::now()->subMonth(12)->toDateString())->get();
+
+
+        }else if($type=="month"){
+            $data= Order::where("shid",$shid)->where("status","completed")->where("updated_at",'>',Carbon::now()->subMonth()->toDateString())->get();
+
+        }else if($type=="week"){
+            $data= Order::where("shid",$shid)->where("status","completed")->where("updated_at",'>',Carbon::now()->subWeek()->toDateString())->get();
+
+        }
+
+        if($data==null){
+            return Response::json(["order"=>"0","earning"=>"0"],200);
+        }
+
+        $earning=0;
+        foreach($data as $order){
+                $earning = $earning + (int)$order->total_cost/100;
+        }
+            $res = [
+                "order"=>$data->count(),
+                "earning"=>$earning
+            ];
+
+        return Response::json($res,200);
+
+      
+
+    }
+
+
+
+
+
+
 
     function sendNoti(){
         // Generated @ codebeautify.org
