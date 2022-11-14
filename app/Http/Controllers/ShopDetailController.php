@@ -243,9 +243,21 @@ class ShopDetailController extends Controller
             
         }
        
-        
-        
+    }
+    public function expressChange($shid,$express){
+        $new_user = ShopDetail::where('shid',$shid)->first();
+        if(!$new_user){
+            return Response::json(["error"=>'Account Not Found'],404);
+        }
 
-
+        
+        $new_user->express = filter_var($express, FILTER_VALIDATE_BOOLEAN);  
+        $result = $new_user->save();
+        if($result){
+            return Response::json(["result"=>'Status Changed'],200);
+        }else{
+            return Response::json(["error"=>'Status Not Changed'],500);
+        }
+        
     }
 }

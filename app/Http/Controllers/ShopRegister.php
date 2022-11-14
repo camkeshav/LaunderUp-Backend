@@ -59,7 +59,7 @@ class ShopRegister extends Controller
         $store = Storage::put("profile".$shid.".jpg", base64_decode($request->profile_image));
        
         if($store==1){
-            $shop_details['profile_image'] = Storage::path("profile".$shid.".jpg");
+            $shop_details['profile_image'] = Storage::url("profile".$shid.".jpg");
         }
 
         // $shop_details["profile_image"]="image";
@@ -72,15 +72,16 @@ class ShopRegister extends Controller
         // $shop_documents["shop_license_image"]="image";
 
         $store = Storage::put("pan".$shid.".jpg", base64_decode($request->pan_image));
-            
+        
+
         if($store==1){
-            $shop_documents['pan_image'] = Storage::path("pan".$shid);
+            $shop_documents['pan_image'] = Storage::url("pan".$shid);
             }
             
         $store = Storage::put("license".$shid.".jpg", base64_decode($request->shop_license_image));
         
         if($store==1){
-            $shop_documents['shop_license_image'] = Storage::path("license".$shid);
+            $shop_documents['shop_license_image'] = Storage::url("license".$shid);
         }
 
 

@@ -260,7 +260,7 @@ class OrderController extends Controller
 
         }else if($status=='Accepted'||$status=='accepted'||$status=='Rejected'||$status=='rejected'){
             
-            $user->status="Picked";
+            $user->status="picked";
 
         }
         else if($status=='Picked'||$status=='picked'){
@@ -346,6 +346,8 @@ class OrderController extends Controller
       
 
     }
+
+    
 
 
 
