@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\ShopLoginCred;
 use Illuminate\Validation\ValidationException;
 use Response;
+use Illuminate\Support\Facades\Storage;
 
 class ShopDetailController extends Controller
 {
@@ -259,5 +260,33 @@ class ShopDetailController extends Controller
             return Response::json(["error"=>'Status Not Changed'],500);
         }
         
+    }
+
+    function changeProfile(Request $request){
+        $request->validate([
+            'shid'=>'required',
+            'image'=>'required'
+        ]);
+        $shid = $request->shid;
+
+        $shop = ShopDetail::where('shid',$shid)->first();
+
+        $store = Storage::disk('s3')->put("images/profile".$shid.".jpg", base64_decode($request->image));
+
+       
+        if($store!=null){
+
+            $shop->image_url = Storage::disk('s3')->url("images/profile".$shid.".jpg");
+            Storage::disk('s3')->setVisibility($shop->image_url ,'public');
+        }
+
+        $result = $shop->save();
+    
+        if($result){
+            return Response::json(["result"=>'Image Updated'],200);
+        }else{
+            return Response::json(["error"=>'Image Not Updated'],500);
+        }
+
     }
 }

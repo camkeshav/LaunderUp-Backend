@@ -39,4 +39,6 @@ Route::get("shopUserFetch/{express}/{service}/{search?}",[ShopDetailController::
 Route::post("test",[ShopRegister::class,'test']);
 Route::get("userFetch/{uid?}",[UserDetailController::class,'fetch']);
 Route::get("stats/{shid}/{type}",[OrderController::class,'stats']);
-Route::get("expressChange",[ShopDetailController::class,'expressChange']);
+Route::get("expressChange/{shid}/{express}",[ShopDetailController::class,'expressChange']);
+Route::post("invoice",[OrderController::class,'invoice']);
+Route::post("changeProfile",[ShopDetailController::class,'changeProfile']);

@@ -14,6 +14,7 @@ use DB;
 use Response;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
+use Razorpay\Api\Api;
 
 class OrderController extends Controller
 {
@@ -377,6 +378,65 @@ class OrderController extends Controller
         curl_close($ch);
 
     }
+
+
+
+
+
+public function invoice(Request $request){
+
+    DB::beginTransaction();
+
+
+    try{
+
+        
+        $key_id = "rzp_test_fsINoU7sl53QSj";
+        $secret = "oQn36juzoWgmk3O70P69wDhY";
+        $api = new Api($key_id, $secret);
+        
+        // $customer= $api->customer->create(array(
+    //  'name' => $request->name,
+    //  'email' => $request->email,
+    //  'contact'=>$request->contact,
+    //  ));
+
+    
+    
+    $invoice = $api->invoice->create(array('type' => 'invoice','date' => Carbon::now(), 
+    'customer'=> array(
+        'name' => $request->name,
+        //  'email' => $request->email,
+        //  'contact'=>$request->contact,
+    ),
+    
+    'line_items'=>array(array('name'=>'bathrobe','amount'=>'500000'))
+    ))->issue();
+    
+    
+    
+    //$api->invoice->fetch($invoice->id)->edit(array('status'=>'paid'));
+    
+    
+    
+    $invoice = $api->invoice->fetch($invoice->id);
+    $response = $invoice->short_url;
+    
+    }
+    catch(Exception $e){
+
+    }
+    if($response!=null){
+        return Response::json(['Invoice Url'=>$response],200);
+        
+    }
+    
+    return Response::json(['Invoice Url'=>"Error"],500);
+    
+    
+    }
+
+    
 
 
 }
