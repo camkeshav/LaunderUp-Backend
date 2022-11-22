@@ -46,13 +46,13 @@ class ShopRegister extends Controller
         
         //putting shid in json objects
         $shop_owner_details = $request->shop_owner_details;
-        $shop_owner_details['shid']= $request->shid;
+        $shop_owner_details->shid= $request->shid;
         //$shop_owner_details["profile_image"]=$request->file('profile_image')->store('images/profile_images');
         
         
 
         $shop_details = $request->shop_details;
-        $shop_details['shid'] = $request->shid;
+        $shop_details->shid = $request->shid;
 
         
         //$shop_details["profile_image"]=base64_decode($request->filename)->store("images/documents/$shid");
@@ -68,7 +68,7 @@ class ShopRegister extends Controller
         
 
         $shop_documents = $request->shop_documents;
-        $shop_documents['shid'] = $request->shid;
+        $shop_documents->shid = $request->shid;
         //$shop_owner_details["shop_license_image"]=$request->file('shop_license_image')->store("images/documents/$shid");
         // $shop_documents["pan_image"]="image";
         // $shop_documents["shop_license_image"]="image";
