@@ -276,7 +276,7 @@ class ShopDetailController extends Controller
         $shid = $request->shid;
 
         $shop = ShopDetail::where('shid',$shid)->first();
-        if($shop!=null){
+        if($shop==null){
             return Response::json(["error"=>'Account Not Found'],404);
         }
 
