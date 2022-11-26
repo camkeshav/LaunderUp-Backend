@@ -56,11 +56,11 @@ class ShopRegister extends Controller
 
         
         //$shop_details["profile_image"]=base64_decode($request->filename)->store("images/documents/$shid");
-        $store = Storage::disk('s3')->put("images/profile".$shid.".jpg", base64_decode($request->profile_image));
+        $store = Storage::disk('s3')->put("images/profile".$shid.".png", base64_decode($request->profile_image));
 
        
         if($store!=null){
-            $shop_details['profile_image'] = Storage::disk('s3')->url("images/profile".$shid.".jpg");
+            $shop_details['profile_image'] = Storage::disk('s3')->url("images/profile".$shid.".png");
             Storage::disk('s3')->setVisibility($shop_details['profile_image'] ,'public');
         }
 
@@ -73,7 +73,7 @@ class ShopRegister extends Controller
         // $shop_documents["pan_image"]="image";
         // $shop_documents["shop_license_image"]="image";
 
-        $store = Storage::disk('s3')->put("images/pan".$shid.".jpg", base64_decode($request->pan_image));
+        $store = Storage::disk('s3')->put("images/pan".$shid.".png", base64_decode($request->pan_image));
 
 
         if($store!=null){
@@ -81,7 +81,7 @@ class ShopRegister extends Controller
             Storage::disk('s3')->setVisibility($shop_documents['pan_image'] ,'public');
         }
             
-        $store = Storage::disk('s3')->put("images/license".$shid.".jpg", base64_decode($request->shop_license_image));
+        $store = Storage::disk('s3')->put("images/license".$shid.".png", base64_decode($request->shop_license_image));
         
         if($store!=null){
             $shop_documents['shop_license_image'] = Storage::disk('s3')->url("images/license".$shid);

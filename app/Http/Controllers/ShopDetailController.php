@@ -226,6 +226,8 @@ class ShopDetailController extends Controller
     }
 
     public function userFetch($express,$service,$search=null){
+        
+        
         if($express==true){
             return $search?ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
             ->where('services_available',"like","%".$service."%")
@@ -245,6 +247,8 @@ class ShopDetailController extends Controller
         }
        
     }
+
+
     public function expressChange($shid,$express){
         $new_user = ShopDetail::where('shid',$shid)->first();
         if(!$new_user){
@@ -262,21 +266,26 @@ class ShopDetailController extends Controller
         
     }
 
-    function changeProfile(Request $request){
+    public function changeProfile(Request $request){
         $request->validate([
             'shid'=>'required',
             'image'=>'required'
         ]);
+
+
         $shid = $request->shid;
 
         $shop = ShopDetail::where('shid',$shid)->first();
+        if($shop!=null){
+            return Response::json(["error"=>'Account Not Found'],404);
+        }
 
-        $store = Storage::disk('s3')->put("images/profile".$shid.".jpg", base64_decode($request->image));
+        $store = Storage::disk('s3')->put("images/profile".$shid.".png", base64_decode($request->image));
 
        
         if($store!=null){
 
-            $shop->image_url = Storage::disk('s3')->url("images/profile".$shid.".jpg");
+            $shop->image_url = Storage::disk('s3')->url("images/profile".$shid.".png");
             Storage::disk('s3')->setVisibility($shop->image_url ,'public');
         }
 
@@ -287,6 +296,9 @@ class ShopDetailController extends Controller
         }else{
             return Response::json(["error"=>'Image Not Updated'],500);
         }
+
+    }
+    public function change(Request $request){
 
     }
 }
