@@ -87,7 +87,7 @@ class ShopRegister extends Controller
                 $shop_documents['pan_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
                 Storage::disk('s3')->setVisibility($shop_documents['pan_image'] ,'public');
             }else{
-                $shop_documents['pan_image'] = "null";
+                $shop_documents['pan_image'] = "p";
     
             }
         }
@@ -102,7 +102,7 @@ class ShopRegister extends Controller
                 $shop_documents['shop_license_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
                 Storage::disk('s3')->setVisibility($shop_documents['shop_license_image'] ,'public');
             }else{
-                $shop_documents['shop_license_image'] ="null";
+                $shop_documents['shop_license_image'] ="p";
             }
         }
 

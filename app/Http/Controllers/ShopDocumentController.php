@@ -43,7 +43,7 @@ class ShopDocumentController extends Controller
         }
 
         //Creating New User
-        if($request->pan_number==null&&$request->shop_license_number==null){
+        if($request->pan_number==null||$request->shop_license_number==null){
             return Response::json(['error'=>['Either Pan or License Number required'],422]);
         }
         $user=ShopDocument::where('shid', $request->shid)->first();
