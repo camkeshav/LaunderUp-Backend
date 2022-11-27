@@ -57,7 +57,7 @@ class ShopRegister extends Controller
         $store;
         //$shop_details["profile_image"]=base64_decode($request->filename)->store("images/documents/$shid");
         
-        if(!$request->profile_image){
+        if($request->profile_image!=null){
             $store = Storage::disk('s3')->put("images/".$shid, $request->profile_image);
             
             if($store!=null){
@@ -80,7 +80,7 @@ class ShopRegister extends Controller
         // $shop_documents["shop_license_image"]="image";
 
         
-        if(!$request->pan_image){
+        if($request->pan_image!=null){
             $store = Storage::disk('s3')->put("images/".$shid, $request->pan_image);
 
             if($store!=null){
@@ -95,7 +95,7 @@ class ShopRegister extends Controller
 
         
             
-        if(!$request->shop_license_image){
+        if($request->shop_license_image!=null){
             $store = Storage::disk('s3')->put("images/".$shid, $request->shop_license_image);
             
             if($store!=null){
