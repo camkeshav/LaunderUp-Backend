@@ -55,20 +55,12 @@ class ShopRegister extends Controller
         $shop_details['shid'] = $request->shid;
 
         
-        // $store = Storage::disk('s3')->put("images/".$shid, $request->image);
-
-       
-        // if($store!=null){
-
-        //     $shop->image_url = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
-        //     Storage::disk('s3')->setVisibility($shop->image_url ,'public');
-        // }
         //$shop_details["profile_image"]=base64_decode($request->filename)->store("images/documents/$shid");
-        $store = Storage::disk('s3')->put("images/".$shid, $request->profile_image);
+        $store = Storage::disk('s3')->put("images/profile".$shid.".png", base64_decode($request->profile_image));
 
        
         if($store!=null){
-            $shop_details['profile_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
+            $shop_details['profile_image'] = Storage::disk('s3')->url("images/profile".$shid.".png");
             Storage::disk('s3')->setVisibility($shop_details['profile_image'] ,'public');
         }
 
@@ -81,18 +73,18 @@ class ShopRegister extends Controller
         // $shop_documents["pan_image"]="image";
         // $shop_documents["shop_license_image"]="image";
 
-        $store = Storage::disk('s3')->put("images/".$shid, $request->pan_image);
+        $store = Storage::disk('s3')->put("images/pan".$shid.".png", base64_decode($request->pan_image));
 
 
         if($store!=null){
-            $shop_documents['pan_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
+            $shop_documents['pan_image'] = Storage::disk('s3')->url("images/pan".$shid);
             Storage::disk('s3')->setVisibility($shop_documents['pan_image'] ,'public');
         }
             
-        $store = Storage::disk('s3')->put("images/".$shid, $request->shop_license_image);
+        $store = Storage::disk('s3')->put("images/license".$shid.".png", base64_decode($request->shop_license_image));
         
         if($store!=null){
-            $shop_documents['shop_license_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
+            $shop_documents['shop_license_image'] = Storage::disk('s3')->url("images/license".$shid);
             Storage::disk('s3')->setVisibility($shop_documents['shop_license_image'] ,'public');
         }
 
