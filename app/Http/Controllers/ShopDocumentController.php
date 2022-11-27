@@ -33,8 +33,7 @@ class ShopDocumentController extends Controller
             'bank_name'=>'required',
             'bank_account_number'=>'required',
             'ifsc_code'=>'required',
-            'pan_image'=>'required',
-            'shop_license_image'=>'required',
+            
 
         ]);
         $user=ShopLoginCred::where('shid', $request->shid)->first();
@@ -43,7 +42,7 @@ class ShopDocumentController extends Controller
         }
 
         //Creating New User
-        if($request->pan_number==null||$request->shop_license_number==null){
+        if($request->pan_number==null&&$request->shop_license_number==null){
             return Response::json(['error'=>['Either Pan or License Number required'],422]);
         }
         $user=ShopDocument::where('shid', $request->shid)->first();

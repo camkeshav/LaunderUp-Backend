@@ -86,10 +86,14 @@ class ShopRegister extends Controller
             if($store!=null){
                 $shop_documents['pan_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
                 Storage::disk('s3')->setVisibility($shop_documents['pan_image'] ,'public');
-            }else{
+            }
+            else{
                 $shop_documents['pan_image'] = "p";
     
             }
+        }else{
+            $shop_documents['pan_image'] = "p";
+
         }
         
 
@@ -104,6 +108,9 @@ class ShopRegister extends Controller
             }else{
                 $shop_documents['shop_license_image'] ="p";
             }
+            
+        }else{
+            $shop_documents['shop_license_image'] ="p";
         }
 
         
