@@ -42,3 +42,4 @@ Route::get("stats/{shid}/{type}",[OrderController::class,'stats']);
 Route::get("expressChange/{shid}/{express}",[ShopDetailController::class,'expressChange']);
 Route::post("invoice",[OrderController::class,'invoice']);
 Route::post("changeProfile",[ShopDetailController::class,'changeProfile']);
+Route::post("changeProfileForm",[ShopDetailController::class,'changeProfileForm']);

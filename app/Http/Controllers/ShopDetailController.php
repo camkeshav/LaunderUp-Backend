@@ -298,7 +298,36 @@ class ShopDetailController extends Controller
         }
 
     }
-    public function change(Request $request){
+    public function changeProfileForm(Request $request){
+        $request->validate([
+            'shid'=>'required',
+            'image'=>'required'
+        ]);
+
+
+        $shid = $request->shid;
+
+        $shop = ShopDetail::where('shid',$shid)->first();
+        if($shop==null){
+            return Response::json(["error"=>'Account Not Found'],404);
+        }
+
+        $store = Storage::disk('s3')->put("images/".$shid, $request->image);
+
+       
+        if($store!=null){
+
+            $shop->image_url = Storage::disk('s3')->url("images/profile".$shid.".png");
+            Storage::disk('s3')->setVisibility($shop->image_url ,'public');
+        }
+
+        $result = $shop->save();
+    
+        if($result){
+            return Response::json(["result"=>'Image Updated'],200);
+        }else{
+            return Response::json(["error"=>'Image Not Updated'],500);
+        }
 
     }
 }
