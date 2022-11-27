@@ -324,7 +324,7 @@ class ShopDetailController extends Controller
         $result = $shop->save();
     
         if($result){
-            return Response::json(["result"=>'Image Updated',"link"=>$store],200);
+            return Response::json(["result"=>'Image Updated',"link"=>$shop->image_url],200);
         }else{
             return Response::json(["error"=>'Image Not Updated'],500);
         }
