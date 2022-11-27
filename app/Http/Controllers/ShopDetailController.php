@@ -317,14 +317,14 @@ class ShopDetailController extends Controller
        
         if($store!=null){
 
-            $shop->image_url = Storage::disk('s3')->url("images/profile".$shid.".png");
+            $shop->image_url = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
             Storage::disk('s3')->setVisibility($shop->image_url ,'public');
         }
 
         $result = $shop->save();
     
         if($result){
-            return Response::json(["result"=>'Image Updated'],200);
+            return Response::json(["result"=>'Image Updated',"link"=>$store],200);
         }else{
             return Response::json(["error"=>'Image Not Updated'],500);
         }
