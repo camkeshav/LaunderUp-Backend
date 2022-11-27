@@ -54,14 +54,18 @@ class ShopRegister extends Controller
         $shop_details = json_decode($request->shop_details,true);
         $shop_details['shid'] = $request->shid;
 
-        
+        $store;
         //$shop_details["profile_image"]=base64_decode($request->filename)->store("images/documents/$shid");
+        
+        if(!$request->profile_image){
         $store = Storage::disk('s3')->put("images/".$shid, $request->profile_image);
-
+        }
        
         if($store!=null){
             $shop_details['profile_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
             Storage::disk('s3')->setVisibility($shop_details['profile_image'] ,'public');
+        }else{
+            $shop_details['profile_image']="null";
         }
 
         // $shop_details["profile_image"]="image";
@@ -74,19 +78,28 @@ class ShopRegister extends Controller
         // $shop_documents["shop_license_image"]="image";
 
         
-
-        $store = Storage::disk('s3')->put("images/".$shid, $request->pan_image);
+        if(!$request->pan_image){
+            $store = Storage::disk('s3')->put("images/".$shid, $request->pan_image);
+        }
+        
 
         if($store!=null){
             $shop_documents['pan_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
             Storage::disk('s3')->setVisibility($shop_documents['pan_image'] ,'public');
+        }else{
+            $shop_documents['pan_image'] = "null";
+
         }
             
+        if(!$request->shop_license_image){
         $store = Storage::disk('s3')->put("images/".$shid, $request->shop_license_image);
-        
+        }
+
         if($store!=null){
             $shop_documents['shop_license_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
             Storage::disk('s3')->setVisibility($shop_documents['shop_license_image'] ,'public');
+        }else{
+            $shop_documents['shop_license_image'] ="null";
         }
 
 
