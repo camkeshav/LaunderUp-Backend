@@ -37,11 +37,13 @@ class ShopRegister extends Controller
         
 
         $user = ShopLoginCred::where('shid', $request->shid)->first();
+
         if(!$user){
             return Response::json(["status"=>'Deatails Not Saved',"error"=>"Shid is incorrect"],500);
         }
 
         DB::beginTransaction();
+
         try {
         
         //putting shid in json objects
@@ -108,13 +110,12 @@ class ShopRegister extends Controller
             }else{
                 $shop_documents['shop_license_image'] ="p";
             }
-            
+
         }else{
-            $shop_documents['shop_license_image'] ="p";
+            $shop_documents['shop_license_image'] = "p";
         }
 
-        
-
+    
 
         
 
