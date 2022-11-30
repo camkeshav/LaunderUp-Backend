@@ -36,8 +36,7 @@ class ShopDocumentController extends Controller
             'bank_name'=>'required',
             'bank_account_number'=>'required',
             'ifsc_code'=>'required',
-            'pan_image'=>'required',
-            'shop_license_image'=>'required',
+            
 
         ]);
         $user=ShopLoginCred::where('shid', $request->shid)->first();

@@ -37,55 +37,91 @@ class ShopRegister extends Controller
         
 
         $user = ShopLoginCred::where('shid', $request->shid)->first();
+
         if(!$user){
-            return Response::json(["status"=>'Deatails Not Saved',"error"=>"Shid is incorrect"]);
+            return Response::json(["status"=>'Deatails Not Saved',"error"=>"Shid is incorrect"],500);
         }
 
         DB::beginTransaction();
+
+        try {
         
         //putting shid in json objects
-        $shop_owner_details = $request->shop_owner_details;
-        $shop_owner_details["shid"]= $request->shid;
+        $shop_owner_details = json_decode($request->shop_owner_details,true);
+        $shop_owner_details['shid']= $request->shid;
         //$shop_owner_details["profile_image"]=$request->file('profile_image')->store('images/profile_images');
         
         
 
-        $shop_details = $request->shop_details;
-        $shop_details["shid"] = $request->shid;
-        //$shop_details["profile_image"]=base64_decode($request->filename)->store("images/documents/$shid");
-        $store = Storage::put("profile".$shid.".jpg", base64_decode($request->profile_image));
+        $shop_details = json_decode($request->shop_details,true);
+        $shop_details['shid'] = $request->shid;
 
-        if($store==1){
-            $shop_details["profile_image"] = Storage::path("profile".$shid.".jpg");
+        $store;
+        //$shop_details["profile_image"]=base64_decode($request->filename)->store("images/documents/$shid");
+        
+        if($request->profile_image!=null){
+            $store = Storage::disk('s3')->put("images/".$shid, $request->profile_image);
+            
+            if($store!=null){
+                $shop_details['profile_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
+                Storage::disk('s3')->setVisibility($shop_details['profile_image'] ,'public');
+            }else{
+                $shop_details['profile_image']="null";
+            }
         }
+       
+        
 
         // $shop_details["profile_image"]="image";
         
 
-        $shop_documents = $request->shop_documents;
-        $shop_documents["shid"] = $request->shid;
+        $shop_documents = json_decode($request->shop_documents,true);
+        $shop_documents['shid'] = $request->shid;
         //$shop_owner_details["shop_license_image"]=$request->file('shop_license_image')->store("images/documents/$shid");
         // $shop_documents["pan_image"]="image";
         // $shop_documents["shop_license_image"]="image";
 
-        $store = Storage::put("pan".$shid.".jpg", base64_decode($request->pan_image));
+        
+        if($request->pan_image!=null){
+            $store = Storage::disk('s3')->put("images/".$shid, $request->pan_image);
 
-        if($store==1){
-            $shop_documents["pan_image"] = Storage::path("pan".$shid);
+            if($store!=null){
+                $shop_documents['pan_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
+                Storage::disk('s3')->setVisibility($shop_documents['pan_image'] ,'public');
+            }
+            else{
+                $shop_documents['pan_image'] = "p";
+    
+            }
+        }else{
+            $shop_documents['pan_image'] = "p";
+
+        }
+        
+
+        
+            
+        if($request->shop_license_image!=null){
+            $store = Storage::disk('s3')->put("images/".$shid, $request->shop_license_image);
+            
+            if($store!=null){
+                $shop_documents['shop_license_image'] = "https://launderup.s3.ap-south-1.amazonaws.com/".$store;
+                Storage::disk('s3')->setVisibility($shop_documents['shop_license_image'] ,'public');
+            }else{
+                $shop_documents['shop_license_image'] ="p";
+            }
+
+        }else{
+            $shop_documents['shop_license_image'] = "p";
         }
 
-        $store = Storage::put("license".$shid.".jpg", base64_decode($request->shop_license_image));
-
-        if($store==1){
-            $shop_documents["shop_license_image"] = Storage::path("license".$shid);
-        }
-
+    
 
         
 
         $check;
 
-        try {
+        
             $result=(new ShopOwnerController)->store(new Request($shop_owner_details));
             if(!$result) throw "Details Not Saved";
 
@@ -95,6 +131,7 @@ class ShopRegister extends Controller
             $result=(new ShopDocumentController)->store(new Request($shop_documents));
             if(!$result) throw "Details Not Saved";
 
+            
             
         } catch (Exception $e) {
             DB::rollback();

@@ -13,6 +13,8 @@ use App\Http\Controllers\PaymentController;
 use DB;
 use Response;
 use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
+use Razorpay\Api\Api;
 
 class OrderController extends Controller
 {
@@ -120,7 +122,7 @@ class OrderController extends Controller
             'service_type'=>'required',
             'total_cost'=>'required',
             'clothes_types'=>'required',
-            'express'=>'required|boolean',
+            'express'=>'required',
         ]);
 
             $user = ShopLoginCred::where('shid', $request->shid)->first();
@@ -150,7 +152,7 @@ class OrderController extends Controller
             $new_user->total_cost=$request->total_cost;
             $new_user->clothes_types=json_encode($request->clothes_types);
             $new_user->service_type=$request->service_type;
-            $new_user->express=$request->express;
+            $new_user->express=filter_var($request->express, FILTER_VALIDATE_BOOLEAN);
                 
             DB::beginTransaction();
             $result = new JsonResponse();
@@ -270,12 +272,12 @@ class OrderController extends Controller
 
         }else if($status=='Accepted'||$status=='accepted'||$status=='Rejected'||$status=='rejected'){
             
-            $user->status="Picked";
+            $user->status="picked";
 
         }
         else if($status=='Picked'||$status=='picked'){
 
-            $user->status="Completed";
+            $user->status="completed";
 
         }else{
             return Response::json(["error"=>'Order Completed, We Cannot Update it or Order Does not Exist'],500);
@@ -309,14 +311,61 @@ class OrderController extends Controller
 
     }
 
-    public function shopFetch($shid,$type,$page){
-        return Order::where('shid',$shid)->where('status',$type)->paginate($page);
+    public function shopFetch($shid,$type){
+        if($type=="all"){
+            return Order::where('shid',$shid)->paginate(20);
+        }
+        return Order::where('shid',$shid)->where('status',"like","%".$type."%")->paginate(20);
     }
 
 
     public function fetch($order_id){
         return Order::where('order_id',$order_id)->first();
     }
+
+    public function stats($shid,$type){
+
+        $data;
+
+        if($type=="year"){
+
+           $data= Order::where("shid",$shid)->where("status","completed")->where("updated_at",'>',Carbon::now()->subMonth(12)->toDateString())->get();
+
+
+        }else if($type=="month"){
+            $data= Order::where("shid",$shid)->where("status","completed")->where("updated_at",'>',Carbon::now()->subMonth()->toDateString())->get();
+
+        }else if($type=="week"){
+            $data= Order::where("shid",$shid)->where("status","completed")->where("updated_at",'>',Carbon::now()->subWeek()->toDateString())->get();
+
+        }
+
+        if($data==null){
+            return Response::json(["order"=>"0","earning"=>"0"],200);
+        }
+
+        $earning=0;
+        foreach($data as $order){
+                $earning = $earning + (int)$order->total_cost/100;
+        }
+            $res = [
+                "order"=>$data->count(),
+                "earning"=>$earning
+            ];
+
+        return Response::json($res,200);
+
+      
+
+    }
+
+    
+
+
+
+
+
+
 
     function sendNoti(){
         // Generated @ codebeautify.org
@@ -340,6 +389,65 @@ class OrderController extends Controller
         curl_close($ch);
 
     }
+
+
+
+
+
+public function invoice(Request $request){
+
+    DB::beginTransaction();
+
+
+    try{
+
+        
+        $key_id = "rzp_test_fsINoU7sl53QSj";
+        $secret = "oQn36juzoWgmk3O70P69wDhY";
+        $api = new Api($key_id, $secret);
+        
+        // $customer= $api->customer->create(array(
+    //  'name' => $request->name,
+    //  'email' => $request->email,
+    //  'contact'=>$request->contact,
+    //  ));
+
+    
+    
+    $invoice = $api->invoice->create(array('type' => 'invoice','date' => Carbon::now(), 
+    'customer'=> array(
+        'name' => $request->name,
+        //  'email' => $request->email,
+        //  'contact'=>$request->contact,
+    ),
+    
+    'line_items'=>array(array('name'=>'bathrobe','amount'=>'500000'))
+    ))->issue();
+    
+    
+    
+    //$api->invoice->fetch($invoice->id)->edit(array('status'=>'paid'));
+    
+    
+    
+    $invoice = $api->invoice->fetch($invoice->id);
+    $response = $invoice->short_url;
+    
+    }
+    catch(Exception $e){
+
+    }
+    if($response!=null){
+        return Response::json(['Invoice Url'=>$response],200);
+        
+    }
+    
+    return Response::json(['Invoice Url'=>"Error"],500);
+    
+    
+    }
+
+    
 
 
 }
