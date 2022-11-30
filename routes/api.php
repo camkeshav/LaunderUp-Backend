@@ -42,6 +42,7 @@ Route::get("shopFetch/{shid}",[ShopDetailController::class,'fetch']);
 Route::get("shopUserFetch/{express}/{service}/{search?}",[ShopDetailController::class,'userFetch']);
 Route::post("test",[ShopRegister::class,'test']);
 Route::get("userFetch/{uid}}",[UserDetailController::class,'fetch']);
+Route::get("userFetch}",[UserDetailController::class,'allFetch']);
 Route::post("vendorPayment", [VendorPayoutController::class, 'insert']);
 Route::get("shopFetchData/{shid}",[ShopDetailController::class, 'index']);
 Route::get("fetchShops",[ShopDetailController::class, 'fetchShop']);
