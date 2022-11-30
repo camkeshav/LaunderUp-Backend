@@ -25,7 +25,18 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+    }
+
+    public function ordersFetchCompleted(){
+        return Order::where('status', 'completed')->get();
+    }
+
+    public function ordersFetchPending(){
+        return Order::where('status', 'pending')->get();
+    }
+
+    public function ordersFetchAll(){
+        return Order::all();
     }
 
     /**

@@ -16,9 +16,14 @@ class ShopDetailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($shid)
     {
-        //
+        return ShopDetail::where('shid',$shid)->get();
+    }
+
+    public function fetchShop()
+    {
+        return ShopDetail::orderBy('created_at', 'asc')->get();
     }
 
     /**

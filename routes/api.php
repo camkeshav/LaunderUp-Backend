@@ -8,6 +8,10 @@ use App\Http\Controllers\UserDetailController;
 use App\Http\Controllers\ShopDetailController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShopRegister;
+use App\Http\Controllers\Vendor_PayoutsController;
+use App\Http\Controllers\ShopDocumentController;
+use App\Http\Controllers\AdminPayouts;
+use App\Http\Controllers\ShopOwnerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +41,23 @@ Route::get("orderFetch/{order_id}",[OrderController::class,'fetch']);
 Route::get("shopFetch/{shid}",[ShopDetailController::class,'fetch']);
 Route::get("shopUserFetch/{express}/{service}/{search?}",[ShopDetailController::class,'userFetch']);
 Route::post("test",[ShopRegister::class,'test']);
-Route::get("userFetch/{uid?}",[UserDetailController::class,'fetch']);
+Route::get("userFetch/{uid}}",[UserDetailController::class,'fetch']);
+Route::post("vendorPayment", [VendorPayoutController::class, 'insert']);
+Route::get("shopFetchData/{shid}",[ShopDetailController::class, 'index']);
+Route::get("fetchShops",[ShopDetailController::class, 'fetchShop']);
+Route::get("fetchShopDocs/{shid}",[ShopDocumentController::class, 'fetchDocs']);
+Route::get("payout",[AdminPayouts::class, 'makePayment']);
+Route::get("orderFetchListCompleted",[OrderController::class, 'ordersFetchCompleted']);
+Route::get("orderFetchListPending",[OrderController::class, 'ordersFetchPending']);
+Route::get("orderFetchList",[OrderController::class, 'ordersFetchAll']);
+Route::post("updateVerification",[ShopDocumentController::class, 'verify']);
+Route::post("makePayout",[Vendor_PayoutsController::class, 'payout']);
+Route::get("getOwnerDetails/{shid}",[ShopOwnerController::class, 'display']);
+Route::post("updateVerificationCred",[ShopLoginCredController::class,'verify']);
+Route::get("fetchUtr/{pid}",[Vendor_PayoutsController::class, 'fetchPayouts']);
+Route::post("createPayout", [Vendor_PayoutsController::class, 'create']);
+Route::post("updatePayout", [Vendor_PayoutsController::class, 'update']);
+Route::get("fetchPayments", [Vendor_PayoutsController::class, 'fetchAll']);
 Route::get("stats/{shid}/{type}",[OrderController::class,'stats']);
 Route::get("expressChange/{shid}/{express}",[ShopDetailController::class,'expressChange']);
 Route::post("invoice",[OrderController::class,'invoice']);

@@ -63,5 +63,24 @@ class ShopLoginCredController extends Controller
        
     }
 
+
+    public function verify(Request $request){
+
+        $request->validate([
+            'shid' => 'required',
+        ]);
+
+        $new_user = ShopLoginCred::where('shid', $request->shid)->first();
+            // $result = $new_user->update(['verified_at' => now()]);
+        $result = $new_user->update(['verified_at' => now()]);
+        
+        if($result){
+            return Response::json(["result"=>'Details Updated'],200);
+        }
+        else{
+            return Response::json(["error"=>'Details Not Updated'],500);
+        }
+    }
+
     
 }

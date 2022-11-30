@@ -9,9 +9,10 @@
         "chmod -R 777 public/"
     ],
     "require": {
+        "doctrine/dbal": "^3.5",
         "php": "^8.1.2",
         "google/apiclient": "2.12.1",
-        "guzzlehttp/guzzle": "^7.2",
+        "guzzlehttp/guzzle": "^7.5",
         "laravel/framework": "^9.17",
         "laravel/sanctum": "^2.15",
         "laravel/tinker": "^2.7",
