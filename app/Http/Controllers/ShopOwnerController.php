@@ -148,6 +148,10 @@ class ShopOwnerController extends Controller
 
     }
 
+    public function display($shid){
+        return ShopOwner::where('shid', $shid)->get();
+    }
+
     /**
      * Remove the specified resource from storage.
      *
