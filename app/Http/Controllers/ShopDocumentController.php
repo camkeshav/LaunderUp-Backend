@@ -25,6 +25,9 @@ class ShopDocumentController extends Controller
     // $table->string('bank_name');
     // $table->string('bank_account_number');
     // $table->string('ifsc_code');
+    function fetchDocs($shid){
+        return ShopDocument::where('shid',$shid)->get();
+    }
     function store(Request $request){
         $request->validate([
             'shid' => 'required',
@@ -92,7 +95,7 @@ class ShopDocumentController extends Controller
      */
     public function edit(ShopDocument $request)
     {
-        $new_user = ShopDocument::where('shid', $request->shid)->first();;
+        $new_user = ShopDocument::where('shid', $request->shid)->first();
         $new_user->gst_registered=$request->gst_registered;
         $new_user->five_percent_gst=$request->five_percent_gst;
         $new_user->gst_number=$request->gst_number;
@@ -112,6 +115,24 @@ class ShopDocumentController extends Controller
             return null;
         }
 
+    }
+
+    public function verify(Request $request){
+
+        $request->validate([
+            'shid' => 'required',
+        ]);
+
+        $new_user = ShopDocument::where('shid', $request->shid)->first();
+            // $result = $new_user->update(['verified_at' => now()]);
+        $result = $new_user->update(['verified_at' => now()]);
+        
+        if($result){
+            return Response::json(["result"=>'Details Updated'],200);
+        }
+        else{
+            return Response::json(["error"=>'Details Not Updated'],500);
+        }
     }
 
    

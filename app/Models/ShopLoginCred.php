@@ -18,7 +18,7 @@ class ShopLoginCred extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'phone',
+        'phone', 'verified_at',
     ];
 
     /**
