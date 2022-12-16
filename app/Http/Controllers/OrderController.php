@@ -39,6 +39,15 @@ class OrderController extends Controller
         return Order::all();
     }
 
+    public function ordersFetch($shid){
+        return Order::where('shid', $shid)->get();
+    }
+
+    public function ordersFetchProcessed($shid){
+        $amount = Order::where('shid', $shid)->where('status', 'completed')->sum('total_cost');
+        return $amount;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
