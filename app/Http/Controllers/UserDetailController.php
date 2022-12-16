@@ -176,6 +176,10 @@ class UserDetailController extends Controller
                 return $data;
             }
         }
-        return $uid?:UserDetail::paginate(20);
+        return UserDetail::all();
+    }
+
+    public function fetchAll(){
+        return UserDetail::all();
     }
 }
