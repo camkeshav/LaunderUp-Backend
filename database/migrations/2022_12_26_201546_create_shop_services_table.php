@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('vendor__payouts', function (Blueprint $table) {
-            $table->string('status');
+        Schema::create('shop_services', function (Blueprint $table) {
+            $table->id();
+            $table->string('shid');
+            $table->boolean('status');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('vendor__payouts', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('shop_services');
     }
 };

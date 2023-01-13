@@ -12,6 +12,7 @@ use App\Http\Controllers\Vendor_PayoutsController;
 use App\Http\Controllers\ShopDocumentController;
 use App\Http\Controllers\AdminPayouts;
 use App\Http\Controllers\ShopOwnerController;
+use App\Http\Controllers\ShopServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,3 +68,4 @@ Route::post("changeProfile",[ShopDetailController::class,'changeProfile']);
 Route::post("changeProfileForm",[ShopDetailController::class,'changeProfileForm']);
 Route::get("orderFetchList/{shid}",[OrderController::class, 'ordersFetch']);
 Route::get("orderFetchListProcessed/{shid}",[OrderController::class, 'ordersFetchProcessed']);
+Route::get("statusChange/{shid}/{status}",[ShopDetailController::class,'statusChange']);

@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('vendor__payouts', function (Blueprint $table) {
             $table->id()->unique();
-            $table->string('payment_id')->unique();
+            // $table->string('payment_id')->unique();
             $table->string('total_amount');
-            $table->string('razorpay_payment_id')->nullable();
-            $table->string('razorpay_signature')->nullable();
+            $table->string('razorpay_payout_id')->nullable();
+            $table->string('razorpay_utr')->nullable();
+            $table->string('shid');
+            $table->string('status');
             $table->timestamps();
         });
     }

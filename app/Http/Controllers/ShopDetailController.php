@@ -86,6 +86,7 @@ class ShopDetailController extends Controller
             $new_user->operational_hours=$request->operational_hours;
             $new_user->days_open=$request->days_open;
             $new_user->express=$request->express;
+            $new_user->status=false;
             $new_user->services_available=$request->services_available;
             $new_user->cloth_types=json_encode($request->cloth_types);
             $new_user->image_url = $request->profile_image;
@@ -232,24 +233,33 @@ class ShopDetailController extends Controller
 
     public function userFetch($express,$service,$search=null){
         
-        
-        if($express==true){
-            return $search?ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
+        $result;
+
+        if($express=="true"){
+            $result = $search?ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
+            ->where('status',true)
             ->where('services_available',"like","%".$service."%")
             ->where('shop_name',"like","%".$search."%")
+            
             ->paginate(20):
             ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
             ->where('services_available',"like","%".$service."%")->paginate(20);
 
         }else{
-            return $search?ShopDetail::where('services_available',"like","%".$service."%")
+            $result = $search?ShopDetail::where('services_available',"like","%".$service."%")
+            ->where('status',true)
             ->where('shop_name',"like","%".$search."%")
             ->paginate(20):
-            ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
-            ->where('services_available',"like","%".$service."%")->paginate(20);
+            ShopDetail::where('services_available',"like","%".$service."%")->paginate(20);
 
             
         }
+        
+
+        
+
+
+        
        
     }
 
@@ -334,5 +344,31 @@ class ShopDetailController extends Controller
             return Response::json(["error"=>'Image Not Updated'],500);
         }
 
+    }
+
+
+    public function statusChange($shid,$status){
+        $new_user = ShopLoginCred::where('shid',$shid)->first();
+        if(!$new_user){
+            return Response::json(["error"=>'Account Not Found'],404);
+        }
+        if(!$new_user->verified_at){
+            return Response::json(["error"=>'Account Not Verified'],500);
+        }
+
+        $new_user = ShopDetail::where('shid',$shid)->first();
+        if(!$new_user){
+            return Response::json(["error"=>'Account Not Found'],404);
+        }
+
+        
+        $new_user->status = filter_var($status, FILTER_VALIDATE_BOOLEAN);  
+        $result = $new_user->save();
+        if($result){
+            return Response::json(["result"=>'Status Changed'],200);
+        }else{
+            return Response::json(["error"=>'Status Not Changed'],500);
+        }
+        
     }
 }

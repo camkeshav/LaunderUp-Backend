@@ -68,6 +68,8 @@ class ShopRegister extends Controller
             }else{
                 $shop_details['profile_image']="null";
             }
+        }else{
+            $shop_details['profile_image']="p";
         }
        
         
@@ -114,6 +116,8 @@ class ShopRegister extends Controller
         }else{
             $shop_documents['shop_license_image'] = "p";
         }
+
+        $shop_service['shid'] = $request->shid;
 
     
 
