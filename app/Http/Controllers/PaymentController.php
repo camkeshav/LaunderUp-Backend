@@ -30,8 +30,8 @@ class PaymentController extends Controller
         $new_payment = new Payment();
         $payment_id="pid".sha1(time());
 
-        $key_id = "rzp_test_fsINoU7sl53QSj";
-        $secret = "oQn36juzoWgmk3O70P69wDhY";
+        $key_id = "rzp_live_nXaG0Q7sHwmmVR";
+        $secret = "5a24KpedwnoPdvKCBObzEsBA";
 
         $api = new Api($key_id, $secret);
         $order=$api->order->create(

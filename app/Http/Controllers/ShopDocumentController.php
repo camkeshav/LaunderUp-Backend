@@ -70,7 +70,7 @@ class ShopDocumentController extends Controller
         $check_user;
 
         if($user){
-            $check_user=ShopDocumentController::edit($new_user);
+            //$check_user=ShopDocumentController::edit($new_user);
         }else{
             $check_user=$new_user->save();
 
@@ -92,7 +92,7 @@ class ShopDocumentController extends Controller
      * @param  \App\Models\ShopDetails  $shopDetails
      * @return \Illuminate\Http\Response
      */
-    public function edit(ShopDocument $request)
+    public function edit(Request $request)
     {
         $new_user = ShopDocument::where('shid', $request->shid)->first();
         $new_user->gst_registered=$request->gst_registered;
@@ -101,9 +101,9 @@ class ShopDocumentController extends Controller
         $new_user->pan_number=$request->pan_number;
         $new_user->entity_name=$request->entity_name;
         $new_user->address_legal_entity=$request->address_legal_entity;
-        $new_user->pan_image_url= $request->pan_image_url;
+        //$new_user->pan_image_url= $request->pan_image_url;
         $new_user->shop_license_number=$request->shop_license_number;
-        $new_user->shop_license_image_url=$request->shop_license_image_url;
+        //$new_user->shop_license_image_url=$request->shop_license_image_url;
         $new_user->bank_name=$request->bank_name;
         $new_user->bank_account_number=$request->bank_account_number;
         $new_user->ifsc_code=$request->ifsc_code;
@@ -131,6 +131,17 @@ class ShopDocumentController extends Controller
         }
         else{
             return Response::json(["error"=>'Details Not Updated'],500);
+        }
+    }
+
+
+    public function get($shid){
+        $new_user = ShopDocument::where('shid', $shid)->first();
+
+        if($new_user){
+            return Response::json($new_user,200);
+        }else{
+            return Response::json(["error"=>'shid not found'],500);
         }
     }
 

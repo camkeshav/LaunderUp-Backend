@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string("uid");
             $table->string("shid");
             $table->string("customer_name");
+            $table->json('cloth_types');
             $table->string("gst_no");
             $table->string("service_amount");
             $table->string("sgst");

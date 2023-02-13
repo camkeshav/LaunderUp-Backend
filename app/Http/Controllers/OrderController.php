@@ -8,8 +8,11 @@ use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Models\ShopLoginCred; 
 use App\Models\UserLoginCred; 
+use App\Models\ShopDetail; 
+use App\Models\UserDetail; 
 use Illuminate\Http\Request;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\OrderInvoiceController;
 use DB;
 use Response;
 use Illuminate\Http\JsonResponse;
@@ -85,10 +88,10 @@ class OrderController extends Controller
             $payment->razorpay_payment_id = $request->razorpay_payment_id;
             $payment->razorpay_order_id = $request->razorpay_order_id;
             $payment->razorpay_signature = $request->razorpay_signature;
-            $payment->status = "Completed";
+            $payment->status = "completed";
 
             $order = Order::where('order_id', $request->order_id)->first();
-            $order->status = "Confirm";
+            $order->status = "placed";
             
 
 
@@ -100,10 +103,13 @@ class OrderController extends Controller
 
 
             if($check && $check2){
-                return Response::json(["status"=>'Order Placed ',"error"=>"{$e}"],500);
-
-            }else{
+                
                 return Response::json(["status"=>'Order Confirm'],200);
+            }else{
+
+
+                return Response::json(["status"=>'Order Not Placed ',"error"=>"{$e}"],500);
+                
             }
 
 
@@ -111,6 +117,7 @@ class OrderController extends Controller
         }else{
             return Response::json(["status"=>'Order Not Confirm, Something Wrong ',"error"=>"{$e}"],500);
         }
+
 
 
         
@@ -134,8 +141,8 @@ class OrderController extends Controller
             'express'=>'required',
         ]);
 
-            $user = ShopLoginCred::where('shid', $request->shid)->first();
-            if(!$user){
+            $shop = ShopLoginCred::where('shid', $request->shid)->first();
+            if(!$shop){
                 return Response::json(['error'=>['ShId is not valid'],422]);
             }
 
@@ -145,7 +152,7 @@ class OrderController extends Controller
             }
             
 
-            $user=Order::where('order_id', $request->shid)->first();
+            $order=Order::where('order_id', $request->shid)->first();
 
             //create new order model instance
             $order_id="order_id".sha1(time());
@@ -157,7 +164,7 @@ class OrderController extends Controller
             $new_user->delivery_dt=$request->delivery_dt;
             $new_user->geolocation=$request->geolocation;
             $new_user->address=$request->address;
-            $new_user->status=$request->status;
+            $new_user->status="initiated";
             $new_user->total_cost=$request->total_cost;
             $new_user->clothes_types=json_encode($request->clothes_types);
             $new_user->service_type=$request->service_type;
@@ -166,6 +173,7 @@ class OrderController extends Controller
             DB::beginTransaction();
             $result = new JsonResponse();
             try{
+                
                 $result=(new PaymentController)->index(new Request([
                     'total_amount'=>$request->total_cost,
                     'cloth_order_id'=>$order_id,
@@ -185,7 +193,38 @@ class OrderController extends Controller
             $new_user->payment_id = $temp->pid;
             
             $check_user=$new_user->save();
+
+            //make order invoice 
+            try{
+                
+                $result=(new OrderInvoiceController)->store(new Request([
+                    'shid' => $request->shid,
+                    'order_id'=>$order_id,
+                    'uid'=>$request->uid,
+                    'customer_name'=>UserDetail::where('uid', $request->uid)->first()->name,
+                    'cloth_types'=>json_encode($request->clothes_types),
+                    'total_amount'=>$request->total_cost,
+                    'delivery_charge'=>60,
+                ]));
+                
+                if(!$result) return Response::json(["status"=>'Order Not Placed',"error"=>"{$e}"],500);
+                
+            }
+             catch (Exception $e) {
+
+                DB::rollback();
+                
+                return Response::json(["status"=>'Order Not Placed',"error"=>"{$e}"],500);
+                
+            }
+
+
+
+            
+
             DB::commit();
+
+
             if($check_user){
                 $response = [
                     "status"=>"Order Placed, Payment Initiated",
@@ -279,7 +318,7 @@ class OrderController extends Controller
 
             $user->status=$request->option;
 
-        }else if($status=='Accepted'||$status=='accepted'||$status=='Rejected'||$status=='rejected'){
+        }else if($status=='Accepted'||$status=='accepted'){
             
             $user->status="picked";
 
@@ -322,7 +361,10 @@ class OrderController extends Controller
 
     public function shopFetch($shid,$type){
         if($type=="all"){
-            return Order::where('shid',$shid)->paginate(20);
+            return Order::where('shid',$shid)
+                    ->where('status',"like","accepted")
+                    ->orWhere('status',"like","picked")
+                    ->paginate(20);
         }
         return Order::where('shid',$shid)->where('status',"like","%".$type."%")->paginate(20);
     }
@@ -374,8 +416,6 @@ class OrderController extends Controller
 
 
 
-
-
     function sendNoti(){
         // Generated @ codebeautify.org
 
@@ -411,8 +451,8 @@ public function invoice(Request $request){
     try{
 
         
-        $key_id = "rzp_test_fsINoU7sl53QSj";
-        $secret = "oQn36juzoWgmk3O70P69wDhY";
+        $key_id = "rzp_live_nXaG0Q7sHwmmVR";
+        $secret = "5a24KpedwnoPdvKCBObzEsBA";
         $api = new Api($key_id, $secret);
         
         // $customer= $api->customer->create(array(

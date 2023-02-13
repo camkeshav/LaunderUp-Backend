@@ -13,6 +13,8 @@ use App\Http\Controllers\ShopDocumentController;
 use App\Http\Controllers\AdminPayouts;
 use App\Http\Controllers\ShopOwnerController;
 use App\Http\Controllers\ShopServiceController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\OrderInvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,3 +71,17 @@ Route::post("changeProfileForm",[ShopDetailController::class,'changeProfileForm'
 Route::get("orderFetchList/{shid}",[OrderController::class, 'ordersFetch']);
 Route::get("orderFetchListProcessed/{shid}",[OrderController::class, 'ordersFetchProcessed']);
 Route::get("statusChange/{shid}/{status}",[ShopDetailController::class,'statusChange']);
+
+//Feedback
+Route::post("giveFeedback",[FeedbackController::class,'store']);
+Route::get("feedbackForOrder/{orderid}",[FeedbackController::class,'feedbackOrder']);
+Route::get("getCummulativeRating/{shid}",[FeedbackController::class,'getCummulativeRating']);
+
+
+//Update Docs
+Route::get("getDocDetails/{shid}",[ShopDocumentController::class, 'get']);
+Route::post("changeDocsDetails",[ShopDocumentController::class, 'edit']);
+
+
+//order invoice
+Route::get("getInvoice/{order_id}",[OrderInvoiceController::class, 'getInvoice']);
