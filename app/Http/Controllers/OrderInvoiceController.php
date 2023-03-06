@@ -153,6 +153,11 @@ class OrderInvoiceController extends Controller
         //
     }
 
+    public function getInvoiceShop($shid){
+        $orders = Order::where('shid', $shid)->get();
+        return $orders;
+    }
+
     public function getInvoice($order_id){
         $order_invoice = OrderInvoice::where('order_id', $order_id)->first();
         if(!$order_invoice){

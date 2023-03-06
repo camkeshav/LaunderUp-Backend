@@ -70,7 +70,7 @@ Route::post("invoice",[OrderController::class,'invoice']);
 Route::post("changeProfile",[ShopDetailController::class,'changeProfile']);
 Route::post("changeProfileForm",[ShopDetailController::class,'changeProfileForm']);
 Route::get("orderFetchList/{shid}",[OrderController::class, 'ordersFetch']);
-Route::get("orderFetchListProcessed/{shid}",[OrderController::class, 'ordersFetchProcessed']);
+Route::get("getInvoiceShop/{shid}",[OrderInvoiceController::class, 'getInvoiceShop']);
 Route::get("statusChange/{shid}/{status}",[ShopDetailController::class,'statusChange']);
 
 //Feedback

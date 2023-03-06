@@ -43,7 +43,7 @@ class OrderController extends Controller
     }
 
     public function ordersFetchPending(){
-        return Order::where('status', 'pending')->get();
+        return Order::where('status', 'placed')->get();
     }
 
     public function ordersFetchAll(){
@@ -54,10 +54,7 @@ class OrderController extends Controller
         return Order::where('shid', $shid)->get();
     }
 
-    public function ordersFetchProcessed($shid){
-        $amount = Order::where('shid', $shid)->where('status', 'completed')->sum('total_cost');
-        return $amount;
-    }
+    
 
     /**
      * Show the form for creating a new resource.
