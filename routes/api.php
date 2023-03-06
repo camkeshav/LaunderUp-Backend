@@ -15,6 +15,7 @@ use App\Http\Controllers\ShopOwnerController;
 use App\Http\Controllers\ShopServiceController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\OrderInvoiceController;
+use App\Http\Controllers\PushNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +31,7 @@ use App\Http\Controllers\OrderInvoiceController;
 Route::post("shoplogin",[ShopLoginCredController::class,'index']);
 Route::post("register",[ShopRegister::class,'create']);
 Route::post("userlogin",[UserLoginCredController::class,'index']);
-Route::get("userFetch",[UserDetailController::class,'fetchAll']);
+Route::get("userFetch/{uid?}",[UserDetailController::class,'fetch']);
 Route::post("userregister",[UserDetailController::class,'store']);
 Route::post("neworder",[OrderController::class,'store']);
 Route::post("updateShopDetails",[ShopDetailController::class,'updateDetails']);
@@ -85,3 +86,7 @@ Route::post("changeDocsDetails",[ShopDocumentController::class, 'edit']);
 
 //order invoice
 Route::get("getInvoice/{order_id}",[OrderInvoiceController::class, 'getInvoice']);
+
+//notification
+Route::get("notification",[OrderController::class,'sendNotification']);
+Route::post("updateToken",[PushNotificationController::class,'update']);

@@ -27,7 +27,8 @@ return new class extends Migration
             $table->boolean('express');
             $table->string('service_type');
             $table->string('total_cost');
-           
+            $table->string('delivery_cost');
+            
             $table->json('clothes_types');
             $table->timestamps();
         });

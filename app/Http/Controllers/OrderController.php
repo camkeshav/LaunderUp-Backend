@@ -11,16 +11,24 @@ use App\Models\UserLoginCred;
 use App\Models\ShopDetail; 
 use App\Models\UserDetail; 
 use Illuminate\Http\Request;
+use App\Models\PushNotification;
+use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\OrderInvoiceController;
+use App\Http\Controllers\OrderController;
 use DB;
 use Response;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Razorpay\Api\Api;
+use App\Services\FCMService;
+
+
 
 class OrderController extends Controller
 {
+
+
     /**
      * Display a listing of the resource.
      *
@@ -65,23 +73,17 @@ class OrderController extends Controller
             'razorpay_signature'=>'required',
         ]);
 
-        $user = ShopLoginCred::where('shid', $request->shid)->first();
-            if(!$user){
-                return Response::json(['error'=>['ShId is not valid'],422]);
+        $order = Order::where('order_id', $request->cloth_order_id)->first();
+            if(!$order){
+                return Response::json(['error'=>['Order Id is not valid'],422]);
             }
 
-        $user = UserLoginCred::where('uid', $request->uid)->first();
-        if(!$user){
-            return Response::json(['error'=>['UId is not valid'],422]);
-        }
+       
 
-
-
-        $generated_signature = hmac_sha256($request->razorpay_order_id
-         + "|" + $request->razorpay_payment_id, $secret);
+        $secret = "5a24KpedwnoPdvKCBObzEsBA";
+        $generated_signature = hash_hmac('sha256',$request->razorpay_order_id."|".$request->razorpay_payment_id, $secret);
 
     
-
         if ($generated_signature == $request->razorpay_signature) {
             $payment = Payment::where('payment_id', $request->payment_id)->first();
 
@@ -90,7 +92,6 @@ class OrderController extends Controller
             $payment->razorpay_signature = $request->razorpay_signature;
             $payment->status = "completed";
 
-            $order = Order::where('order_id', $request->order_id)->first();
             $order->status = "placed";
             
 
@@ -103,6 +104,11 @@ class OrderController extends Controller
 
 
             if($check && $check2){
+                try{
+                    OrderController::sendNotification($order->shid);
+                }catch(Exception $e){
+                    
+                }
                 
                 return Response::json(["status"=>'Order Confirm'],200);
             }else{
@@ -139,6 +145,7 @@ class OrderController extends Controller
             'total_cost'=>'required',
             'clothes_types'=>'required',
             'express'=>'required',
+            'delivery_cost'=>'required'
         ]);
 
             $shop = ShopLoginCred::where('shid', $request->shid)->first();
@@ -166,7 +173,8 @@ class OrderController extends Controller
             $new_user->address=$request->address;
             $new_user->status="initiated";
             $new_user->total_cost=$request->total_cost;
-            $new_user->clothes_types=json_encode($request->clothes_types);
+            $new_user->delivery_cost = $request->delivery_cost;
+            $new_user->clothes_types=$request->clothes_types;
             $new_user->service_type=$request->service_type;
             $new_user->express=filter_var($request->express, FILTER_VALIDATE_BOOLEAN);
                 
@@ -202,9 +210,9 @@ class OrderController extends Controller
                     'order_id'=>$order_id,
                     'uid'=>$request->uid,
                     'customer_name'=>UserDetail::where('uid', $request->uid)->first()->name,
-                    'cloth_types'=>json_encode($request->clothes_types),
+                    'cloth_types'=>$request->clothes_types,
                     'total_amount'=>$request->total_cost,
-                    'delivery_charge'=>60,
+                    'delivery_charge'=>$request->delivery_cost,
                 ]));
                 
                 if(!$result) return Response::json(["status"=>'Order Not Placed',"error"=>"{$e}"],500);
@@ -355,7 +363,7 @@ class OrderController extends Controller
 
     public function userFetch($uid,$page){
         
-        return Order::where('uid',$uid)->paginate($page);
+        return Order::where('uid',$uid)->paginate(50);
 
     }
 
@@ -414,35 +422,6 @@ class OrderController extends Controller
 
 
 
-
-
-    function sendNoti(){
-        // Generated @ codebeautify.org
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/myproject-b5ae1/messages:send');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n  \"message\": {\n    \"topic\" : \"foo-bar\",\n    \"notification\": {\n      \"body\": \"This is a Firebase Cloud Messaging Topic Message!\",\n      \"title\": \"FCM Message\"\n    }\n  }\n}");
-
-        $headers = array();
-        $headers[] = 'Authorization: Bearer ya29.ElqKBGN2Ri_Uz...HnS_uNreA';
-        $headers[] = 'Content-Type: application/json';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        }
-        curl_close($ch);
-
-    }
-
-
-
-
-
 public function invoice(Request $request){
 
     DB::beginTransaction();
@@ -495,6 +474,29 @@ public function invoice(Request $request){
     
     
     }
+
+    public function sendNotification($shid)
+    {
+
+        $notification = PushNotification::where('shid',$shid)->first();
+        $token = $notification->token;
+        
+        //$token = "dQkb4qc0Sy6EWLz_sU9Y6x:APA91bFIXJvHxkxWubM3t7vJbDPy-rXEoRiV6BeH73aGbOx7G6SQ36eDG95C3rhXbIgs-tvJzVjB74g08nIb7YJQ-QlnOMO9GT4zOrQAONUxPnjT6ppBOOCMVuzsqEEpyvnBtUREQuGv";
+
+            
+        FCMService::send(
+            $token,
+            [
+                'title' => 'New Order',
+                'body' => 'You Received a new order',
+            ]
+        );
+
+    }
+      
+        
+    
+
 
     
 

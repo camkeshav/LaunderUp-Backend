@@ -67,6 +67,9 @@ class ShopDetailController extends Controller
             'services_available'=>'required',
             'cloth_types'=>'required',
             'profile_image'=>'required',
+            'longitude'=>'required',
+            'latitude'=>'required'
+          
 
         ]);
 
@@ -87,6 +90,8 @@ class ShopDetailController extends Controller
             $new_user->days_open=$request->days_open;
             $new_user->express=$request->express;
             $new_user->status=false;
+            $new_user->shop_longitude = $request->longitude;
+            $new_user->shop_latitude = $request->latitude;
             $new_user->services_available=$request->services_available;
             $new_user->cloth_types=json_encode($request->cloth_types);
             $new_user->image_url = $request->profile_image;
@@ -107,7 +112,6 @@ class ShopDetailController extends Controller
                 
                 return null;
             }
-
 
 
     }
@@ -141,6 +145,7 @@ class ShopDetailController extends Controller
         $new_user->services_available=$request->services_available;
         $new_user->cloth_types=json_encode($request->cloth_types);
         $new_user->image_url =$request->image_url;
+        
         $result = $new_user->save();
         if($result){
             return ["result"=>'updated'];
@@ -167,7 +172,8 @@ class ShopDetailController extends Controller
             'operational_hours'=>'required',
             'days_open'=>'required',
             'services_available'=>'required',
-            
+            'longitude'=>'required',
+            'latitude'=>'required'
 
         ]);
         
@@ -182,8 +188,10 @@ class ShopDetailController extends Controller
         $new_user->operational_hours=$request->operational_hours;
         $new_user->days_open=$request->days_open;
         $new_user->services_available=$request->services_available;
+        $new_user->shop_longitude = $request->longitude;
+        $new_user->shop_latitude = $request->latitude;
        
-     
+ 
         $result = $new_user->save();
         if($result){
             return Response::json(["result"=>'Details Updated'],200);
@@ -240,9 +248,9 @@ class ShopDetailController extends Controller
             ->where('status',true)
             ->where('services_available',"like","%".$service."%")
             ->where('shop_name',"like","%".$search."%")
-            
             ->paginate(20):
             ShopDetail::where('express',filter_var($express, FILTER_VALIDATE_BOOLEAN))
+            ->where('status',true)
             ->where('services_available',"like","%".$service."%")->paginate(20);
 
         }else{
@@ -250,7 +258,10 @@ class ShopDetailController extends Controller
             ->where('status',true)
             ->where('shop_name',"like","%".$search."%")
             ->paginate(20):
-            ShopDetail::where('services_available',"like","%".$service."%")->paginate(20);
+            ShopDetail::where('services_available',"like","%".$service."%")
+            ->where('status',true)
+            ->paginate(20)
+            ;
 
             
         }
@@ -258,7 +269,7 @@ class ShopDetailController extends Controller
 
         
 
-
+        return $result;
         
        
     }

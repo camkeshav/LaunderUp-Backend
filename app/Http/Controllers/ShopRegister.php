@@ -79,7 +79,7 @@ class ShopRegister extends Controller
 
         $shop_documents = json_decode($request->shop_documents,true);
         $shop_documents['shid'] = $request->shid;
-        //$shop_owner_details["shop_license_image"]=$request->file('shop_license_image')->store("images/documents/$shid");
+        // $shop_owner_details["shop_license_image"]=$request->file('shop_license_image')->store("images/documents/$shid");
         // $shop_documents["pan_image"]="image";
         // $shop_documents["shop_license_image"]="image";
 
@@ -148,8 +148,6 @@ class ShopRegister extends Controller
         ShopLoginCred::where('shid', $request->shid)->update(['account_created_at' =>Carbon::now()]);
         return Response::json(["status"=>'Details Saved'],200);
        
-
-
     }
 
     public function test(Request $request){

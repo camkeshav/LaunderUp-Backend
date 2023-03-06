@@ -100,7 +100,10 @@ class FeedbackController extends Controller
     public function getCummulativeRating($shid){
         $avg = Feedback::where('shid', $shid)->avg('rating');
 
-        return Response::json(['Avg Rating'=>$avg],200);
+        if($avg == null ){
+            return Response::json(['rating'=>"0"],200);
+        }
+        return Response::json(['rating'=>$avg],200);
 
     }
 
@@ -158,3 +161,5 @@ class FeedbackController extends Controller
         //
     }
 }
+
+

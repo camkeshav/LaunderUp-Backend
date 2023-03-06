@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ShopLoginCred;
+use App\Models\PushNotification;
 use Illuminate\Routing\ResponseFactory;
 use Response;
 
@@ -12,15 +13,18 @@ class ShopLoginCredController extends Controller
     function index(Request $request){
         $account_type;
         $shid;
+        $notification;
         $request->validate([
             'phone' => 'required',
-            
+            'token' => 'required'
         ]);
 
 
         $user = ShopLoginCred::where('phone', $request->phone)->first();
 
-        if($user==null){
+        if($user == null){
+            
+            $notification = new PushNotification;
             
             $new_user = new ShopLoginCred;
             $new_user->phone=$request->phone;
@@ -36,7 +40,14 @@ class ShopLoginCredController extends Controller
                 $account_type="Created";
                 $shid=$new_user->shid;
             }
+
+            $notification->shid = $shid;
+            $notification->token = $request->token;
+            $notification->save();
+
         }else{
+
+
             if($user->account_created_at!=null){
                 $account_type='Logged In';
                 
@@ -44,10 +55,18 @@ class ShopLoginCredController extends Controller
                 $account_type="Created but phone number exists";
             }
             $shid=$user->shid;
+
+            $notification = PushNotification::where("shid",$shid)->first();
+            $notification->token = $request->token;
+            $notification->save();
             
         }
 
         $token = $user->createToken($request->phone)->plainTextToken;
+
+        $notification = PushNotification::where("shid",$shid)->first();
+
+
         $response = [
             'account_status'=>$account_type,
             'token'=>$token,

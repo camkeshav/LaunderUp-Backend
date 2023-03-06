@@ -21,6 +21,7 @@ class UserLoginCredController extends Controller
         $request->validate([
             'phone' => 'required',
             
+            
         ]);
 
 

@@ -92,7 +92,7 @@ class OrderInvoiceController extends Controller
         $oi->utgst="NOT APPLICABLE";
         $oi->sgst= $gst/2;
         $oi->cgst= $gst/2;
-        $oi->service_amount= $total_amount-(int)$gst-$request->delivery_charge;
+        $oi->service_amount= $total_amount-(int)$gst-($request->delivery_charge);
         $oi->service_charge= 0;
         
         $check_user=$oi->save();

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('shid')->unique();
             $table->string('shop_name');
             $table->string('shop_address');
+            $table->string('shop_longitude');
+            $table->string('shop_latitude');
             $table->string('shop_phone_no');
             $table->string('operational_hours');
             $table->boolean('express');
